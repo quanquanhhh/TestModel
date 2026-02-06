@@ -1,0 +1,9 @@
+﻿Model/.idea
+Model/Library
+Model/Logs
+Model/obj
+Model/Temp
+*.meta
+*.*.meta
+*.*.*.meta
+*.*.*.*.meta
