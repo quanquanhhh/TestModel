@@ -8,28 +8,336 @@
   <meta name="format-detection" content="telephone=no" />
   <title>IELTS Speaking Part 2</title>
   <style>
-    :root{--bg:#fbfcf8;--text:#121614;--muted:#687169;--soft:#eef6e9;--accent:#237033;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);overscroll-behavior:none}body{user-select:none;-webkit-user-select:none;position:fixed;inset:0}
-    .app{position:relative;width:100vw;height:100vh;height:100dvh;max-width:520px;margin:0 auto;overflow:hidden;background:radial-gradient(circle at 50% -10%,rgba(93,154,79,.08),transparent 38%),var(--bg)}
-    .track{position:absolute;left:0;top:0;width:100%;will-change:transform;transform:translate3d(0,0,0)}.track.anim{transition:transform .26s cubic-bezier(.2,.85,.2,1)}
-    .card-page{position:relative;width:100%;height:100vh;height:100dvh;padding:calc(var(--safe-top) + 14px) 24px calc(var(--safe-bottom) + 18px);display:flex;flex-direction:column;background:transparent;overflow:hidden}
-    .topbar{height:36px;display:grid;grid-template-columns:1fr auto;align-items:center;flex:0 0 auto}.top-title{font-size:17px;font-weight:700;letter-spacing:.1px}.progress{color:var(--accent);font-weight:700;font-size:15px}
-    .meta-row{margin-top:15px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex:0 0 auto}.story-tag{display:inline-flex;align-items:center;min-height:32px;max-width:86%;padding:7px 12px;border-radius:999px;background:var(--soft);color:var(--accent);font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .question-title{margin-top:18px;font-size:clamp(25px,6.8vw,34px);line-height:1.1;font-weight:780;letter-spacing:-.7px;flex:0 0 auto}.page-indicator{width:48px;height:5px;margin-top:18px;margin-bottom:17px;position:relative;flex:0 0 auto}.active-line{position:absolute;left:0;top:0;width:22px;height:5px;border-radius:999px;background:var(--accent);transform:translateX(0);transition:transform .18s cubic-bezier(.2,.9,.2,1)}.card-page.mode-cue .active-line{transform:translateX(26px)}
-    .content-wrap{position:relative;flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-right:2px;padding-bottom:76px;scrollbar-width:none;overscroll-behavior:contain}.content-wrap::-webkit-scrollbar{display:none}
-    .section-title{display:flex;align-items:center;gap:9px;color:var(--accent);font-size:18px;font-weight:760;margin:0 0 17px}.section-icon{width:21px;height:21px;border:2px solid currentColor;border-radius:5px;display:inline-block;position:relative;flex:0 0 auto}.section-icon:before{content:"";position:absolute;left:4px;right:4px;top:6px;height:2px;border-radius:2px;background:currentColor;box-shadow:0 5px 0 currentColor;opacity:.85}
-    .answer-text{font-size:17px;line-height:1.56;letter-spacing:.03px;white-space:pre-wrap}.cue-list{list-style:none;margin:0;padding:0}.cue-list li{position:relative;margin:0 0 17px;padding:18px 18px 18px 44px;border-radius:19px;background:rgba(237,247,232,.82);color:var(--text);font-size:18px;line-height:1.35;font-weight:620}.cue-list li:before{content:"";position:absolute;left:20px;top:27px;width:8px;height:8px;border-radius:50%;background:var(--accent)}
-    .keywords{margin-top:22px;padding:14px 16px;border-radius:18px;background:rgba(237,247,232,.8);color:var(--muted);font-size:14px;line-height:1.45;white-space:pre-wrap}.card-page.mode-answer .cue-only,.card-page.mode-cue .answer-only{display:none}
-    .translate-chip{position:absolute;right:24px;bottom:calc(var(--safe-bottom) + 24px);z-index:8;width:46px;height:38px;border-radius:13px;border:1.5px solid var(--accent);background:rgba(255,255,255,.78);color:var(--accent);font-size:20px;font-weight:800;display:grid;place-items:center;box-shadow:0 10px 24px rgba(16,60,20,.08);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}.card-page.mode-cue .translate-chip{display:none}
-    .translation-panel{position:absolute;z-index:20;left:16px;right:16px;bottom:calc(var(--safe-bottom) + 14px);max-height:58vh;overflow-y:auto;-webkit-overflow-scrolling:touch;background:rgba(255,255,255,.95);color:#101418;border-radius:24px;padding:18px 20px 22px;box-shadow:0 24px 80px rgba(20,38,19,.22);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transform:translateY(calc(100% + 40px));opacity:0;transition:transform .18s ease,opacity .18s ease}.translation-panel.show{transform:translateY(0);opacity:1}.translation-title{font-size:16px;font-weight:760;color:var(--accent);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}.close-translation{width:28px;height:28px;border-radius:50%;border:0;background:#eef6e9;color:#237033;font-size:22px;line-height:28px;padding:0}.translation-text{font-size:16px;line-height:1.55;white-space:pre-wrap}.edge-hint{position:absolute;left:0;right:0;bottom:calc(var(--safe-bottom) + 6px);text-align:center;font-size:12px;color:rgba(35,112,51,.42);pointer-events:none;z-index:12}
+    :root {
+      --bg: #fbfcf8;
+      --text: #121614;
+      --muted: #687169;
+      --soft: #eef6e9;
+      --accent: #237033;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --snap-duration: 480ms;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      overscroll-behavior: none;
+    }
+
+    body {
+      user-select: none;
+      -webkit-user-select: none;
+      position: fixed;
+      inset: 0;
+    }
+
+    .app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      max-width: 520px;
+      margin: 0 auto;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% -10%, rgba(93,154,79,.08), transparent 38%), var(--bg);
+    }
+
+    .track {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      will-change: transform;
+      transform: translate3d(0,0,0);
+    }
+
+    .track.anim {
+      transition: transform var(--snap-duration) cubic-bezier(.18,.86,.18,1);
+    }
+
+    .card-page {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      padding: calc(var(--safe-top) + 14px) 24px calc(var(--safe-bottom) + 18px);
+      display: flex;
+      flex-direction: column;
+      background: transparent;
+      overflow: hidden;
+    }
+
+    .topbar {
+      height: 36px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      flex: 0 0 auto;
+    }
+
+    .top-title { font-size: 17px; font-weight: 700; letter-spacing: .1px; }
+    .progress { color: var(--accent); font-weight: 700; font-size: 15px; }
+
+    .meta-row {
+      margin-top: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex: 0 0 auto;
+    }
+
+    .story-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      max-width: 86%;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--accent);
+      font-size: 15px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .question-title {
+      margin-top: 18px;
+      font-size: clamp(25px, 6.8vw, 34px);
+      line-height: 1.1;
+      font-weight: 780;
+      letter-spacing: -.7px;
+      flex: 0 0 auto;
+    }
+
+    .page-indicator {
+      width: 48px;
+      height: 5px;
+      margin-top: 18px;
+      margin-bottom: 17px;
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .active-line {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 22px;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--accent);
+      transform: translateX(0px);
+      transition: transform .18s cubic-bezier(.2,.9,.2,1);
+    }
+
+    .card-page.mode-cue .active-line { transform: translateX(26px); }
+
+    .content-wrap {
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-right: 2px;
+      padding-bottom: 76px;
+      scrollbar-width: none;
+      overscroll-behavior: contain;
+    }
+
+    .content-wrap::-webkit-scrollbar { display: none; }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--accent);
+      font-size: 18px;
+      font-weight: 760;
+      margin: 0 0 17px;
+    }
+
+    .section-icon {
+      width: 21px;
+      height: 21px;
+      border: 2px solid currentColor;
+      border-radius: 5px;
+      display: inline-block;
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .section-icon::before {
+      content: "";
+      position: absolute;
+      left: 4px;
+      right: 4px;
+      top: 6px;
+      height: 2px;
+      border-radius: 2px;
+      background: currentColor;
+      box-shadow: 0 5px 0 currentColor;
+      opacity: .85;
+    }
+
+    .answer-text {
+      font-size: 17px;
+      line-height: 1.56;
+      letter-spacing: .03px;
+      white-space: pre-wrap;
+    }
+
+    .cue-list { list-style: none; margin: 0; padding: 0; }
+
+    .cue-list li {
+      position: relative;
+      margin: 0 0 17px;
+      padding: 18px 18px 18px 44px;
+      border-radius: 19px;
+      background: rgba(237,247,232,.82);
+      color: var(--text);
+      font-size: 18px;
+      line-height: 1.35;
+      font-weight: 620;
+    }
+
+    .cue-list li::before {
+      content: "";
+      position: absolute;
+      left: 20px;
+      top: 27px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .keywords {
+      margin-top: 22px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(237,247,232,.8);
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+
+    .card-page.mode-answer .cue-only,
+    .card-page.mode-cue .answer-only { display: none; }
+
+    .translate-chip {
+      position: absolute;
+      right: 24px;
+      bottom: calc(var(--safe-bottom) + 24px);
+      z-index: 8;
+      width: 46px;
+      height: 38px;
+      border-radius: 13px;
+      border: 1.5px solid var(--accent);
+      background: rgba(255,255,255,.78);
+      color: var(--accent);
+      font-size: 20px;
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 10px 24px rgba(16,60,20,.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .card-page.mode-cue .translate-chip { display: none; }
+
+    .translation-panel {
+      position: absolute;
+      z-index: 20;
+      left: 16px;
+      right: 16px;
+      bottom: calc(var(--safe-bottom) + 14px);
+      max-height: 58vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      background: rgba(255,255,255,.95);
+      color: #101418;
+      border-radius: 24px;
+      padding: 18px 20px 22px;
+      box-shadow: 0 24px 80px rgba(20,38,19,.22);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transform: translateY(calc(100% + 40px));
+      opacity: 0;
+      transition: transform .18s ease, opacity .18s ease;
+    }
+
+    .translation-panel.show { transform: translateY(0); opacity: 1; }
+
+    .translation-title {
+      font-size: 16px;
+      font-weight: 760;
+      color: var(--accent);
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .close-translation {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 0;
+      background: #eef6e9;
+      color: #237033;
+      font-size: 22px;
+      line-height: 28px;
+      padding: 0;
+    }
+
+    .translation-text {
+      font-size: 16px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+
+    .edge-hint {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: calc(var(--safe-bottom) + 6px);
+      text-align: center;
+      font-size: 12px;
+      color: rgba(35,112,51,.42);
+      pointer-events: none;
+      z-index: 12;
+    }
   </style>
 </head>
+
 <body>
   <div id="app" class="app">
     <div id="track" class="track"></div>
-    <aside class="translation-panel" id="translationPanel"><div class="translation-title"><span>中文翻译</span><button class="close-translation" id="closeTranslation" type="button">×</button></div><div class="translation-text" id="translationText"></div></aside>
+
+    <aside class="translation-panel" id="translationPanel">
+      <div class="translation-title">
+        <span>中文翻译</span>
+        <button class="close-translation" id="closeTranslation" type="button">×</button>
+      </div>
+      <div class="translation-text" id="translationText"></div>
+    </aside>
+
     <div class="edge-hint" id="edgeHint"></div>
   </div>
+
   <script>
     const QUESTIONS = [
   {
@@ -974,31 +1282,321 @@
     "fullChinese": "我喜欢的一个安静地方，是甘肃植树地点附近的一片开阔区域，尤其是清晨的时候。\n\n我知道这个地方，是因为我去那里参加志愿活动。因为它离我住的地方很远，所以我不能经常去，但我仍然记得很清楚。\n\n在志愿者开始工作之前，那里非常安静。车不多，大家说话也很轻，因为都还在刚醒来的状态。我站在那里几分钟，看着开阔的土地，深深吸了一口气。\n\n我喜欢在那里短暂地什么都不做。它让我从平时充满手机、消息和工作的城市生活中休息了一下。\n\n我在那里感到很平静。它不是著名景点，但给了我一种到现在还记得的安静感觉。"
   }
 ];
-    const app=document.getElementById('app'),track=document.getElementById('track'),translationPanel=document.getElementById('translationPanel'),translationText=document.getElementById('translationText'),closeTranslation=document.getElementById('closeTranslation'),edgeHint=document.getElementById('edgeHint');
-    let index=Number(localStorage.getItem('ielts_part2_index')||0); if(!Number.isFinite(index)||index<0||index>=QUESTIONS.length)index=0;
-    let mode='answer',viewH=0,dragY=0,translationOpen=false;
-    const esc=s=>String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-    function storyName(q){if(q.story==='故事1')return'故事1 · 甘肃植树';if(q.story==='故事2')return'故事2 · ChatGPT / OpenAI';return q.story||'特殊题'}
-    function pageHTML(q,i){const pts=Array.isArray(q.cuePoints)&&q.cuePoints.length?q.cuePoints:['No cue card found for this question.'];return `<article class="card-page mode-answer" data-page="${i}"><header class="topbar"><div class="top-title">IELTS Speaking Part 2</div><div class="progress">${i+1}/${QUESTIONS.length}</div></header><div class="meta-row"><div class="story-tag">${esc(storyName(q))}</div></div><div class="question-title">${esc(q.title||q.topicCn||'')}</div><div class="page-indicator" aria-hidden="true"><div class="active-line"></div></div><section class="content-wrap"><div class="answer-only"><h2 class="section-title"><span class="section-icon"></span><span>Full Answer</span></h2><div class="answer-text">${esc(q.fullEnglish||'')}</div>${q.keywords?`<div class="keywords">辅助记忆：\n${esc(q.keywords)}</div>`:''}</div><div class="cue-only"><h2 class="section-title"><span class="section-icon"></span><span>You should say:</span></h2><ul class="cue-list">${pts.map(p=>`<li>${esc(p)}</li>`).join('')}</ul></div></section><div class="translate-chip">中</div></article>`}
-    function build(){track.innerHTML=QUESTIONS.map(pageHTML).join('');track.querySelectorAll('.translate-chip').forEach(chip=>chip.addEventListener('click',e=>{e.stopPropagation();const p=chip.closest('.card-page');if(!p||Number(p.dataset.page)!==index||mode!=='answer')return;translationOpen?hideTranslation():showTranslation()}))}
-    function currentPage(){return track.querySelector(`.card-page[data-page="${index}"]`)}
-    function currentContent(){const p=currentPage();return p?p.querySelector('.content-wrap'):null}
-    function updateModeClasses(){track.querySelectorAll('.card-page').forEach((p,i)=>{if(i===index){p.classList.toggle('mode-answer',mode==='answer');p.classList.toggle('mode-cue',mode==='cue')}else{p.classList.add('mode-answer');p.classList.remove('mode-cue')}})}
-    function setTrack(animated=false){viewH=app.clientHeight||window.innerHeight;track.classList.toggle('anim',animated);track.style.transform=`translate3d(0,${-index*viewH+dragY}px,0)`;if(animated)setTimeout(()=>track.classList.remove('anim'),280)}
-    function render(animated=false){dragY=0;updateModeClasses();setTrack(animated);translationText.textContent=QUESTIONS[index].fullChinese||'';hideTranslation();localStorage.setItem('ielts_part2_index',String(index))}
-    function setMode(next){if(mode===next)return;mode=next;const c=currentContent();if(c)c.scrollTop=0;hideTranslation();updateModeClasses()}
-    function showTranslation(){translationOpen=true;translationPanel.classList.add('show')}function hideTranslation(){translationOpen=false;translationPanel.classList.remove('show')}closeTranslation.addEventListener('click',hideTranslation);
-    function scrollBoundary(){const c=currentContent();if(!c)return{atTop:true,atBottom:true};return{atTop:c.scrollTop<=2,atBottom:c.scrollTop+c.clientHeight>=c.scrollHeight-2}}
-    function canPageFromContent(dy){const b=scrollBoundary();if(dy>0&&b.atTop&&index>0)return true;if(dy<0&&b.atBottom&&index<QUESTIONS.length-1)return true;return false}
-    function canPageDirect(dy){if(dy>0&&index>0)return true;if(dy<0&&index<QUESTIONS.length-1)return true;return false}
-    let startX=0,startY=0,lastX=0,lastY=0,dragStartY=0,startTime=0,axis=null,startedInContent=false,activeV=false,activeH=false;
-    app.addEventListener('touchstart',e=>{if(translationOpen)return;const t=e.touches[0];startX=lastX=t.clientX;startY=lastY=t.clientY;dragStartY=startY;startTime=Date.now();axis=null;startedInContent=!!e.target.closest('.content-wrap');activeV=false;activeH=false;dragY=0;edgeHint.textContent='';track.classList.remove('anim')},{passive:true});
-    app.addEventListener('touchmove',e=>{if(translationOpen)return;const t=e.touches[0];lastX=t.clientX;lastY=t.clientY;const dx=lastX-startX,dy=lastY-startY,absX=Math.abs(dx),absY=Math.abs(dy);if(!axis&&(absX>10||absY>10))axis=absX>absY?'x':'y';if(axis==='x'){activeH=true;if(absX>14)e.preventDefault();return}if(axis==='y'){if(!activeV){const can=startedInContent?canPageFromContent(dy):canPageDirect(dy);if(can){activeV=true;dragStartY=lastY;dragY=0}else{if(!startedInContent){const blocked=(dy>0&&index===0)||(dy<0&&index===QUESTIONS.length-1);if(blocked)edgeHint.textContent=dy>0?'已经是第一题':'已经是最后一题'}return}}if(activeV){e.preventDefault();dragY=lastY-dragStartY;setTrack(false)}}},{passive:false});
-    app.addEventListener('touchend',()=>{if(translationOpen)return;const dx=lastX-startX,activeDy=lastY-dragStartY,dt=Math.max(1,Date.now()-startTime),vx=dx/dt,vy=activeDy/dt;if(activeV){const passDist=Math.abs(activeDy)>Math.min(145,viewH*.2),passVel=Math.abs(vy)>.72&&Math.abs(activeDy)>42;let next=index;if((passDist||passVel)&&activeDy<0&&index<QUESTIONS.length-1)next=index+1;if((passDist||passVel)&&activeDy>0&&index>0)next=index-1;index=next;mode='answer';const c=currentContent();if(c)c.scrollTop=0;render(true)}else if(activeH||axis==='x'){if(Math.abs(dx)>68||Math.abs(vx)>.62){if(dx>0)setMode('cue');else setMode('answer')}}dragY=0;axis=null;activeV=false;activeH=false;setTimeout(()=>edgeHint.textContent='',500)},{passive:true});
-    app.addEventListener('touchcancel',()=>{dragY=0;render(true);axis=null;activeV=false;activeH=false},{passive:true});
-    window.addEventListener('resize',()=>render(false));
-    window.addEventListener('keydown',e=>{if(e.key==='ArrowDown'&&index<QUESTIONS.length-1){index++;mode='answer';render(true)}if(e.key==='ArrowUp'&&index>0){index--;mode='answer';render(true)}if(e.key==='ArrowRight')setMode('cue');if(e.key==='ArrowLeft')setMode('answer');if(e.key==='Escape')hideTranslation()});
-    build();render(false);
+
+    const app = document.getElementById('app');
+    const track = document.getElementById('track');
+    const translationPanel = document.getElementById('translationPanel');
+    const translationText = document.getElementById('translationText');
+    const closeTranslation = document.getElementById('closeTranslation');
+    const edgeHint = document.getElementById('edgeHint');
+
+    let index = Number(localStorage.getItem('ielts_part2_index') || 0);
+    if (!Number.isFinite(index) || index < 0 || index >= QUESTIONS.length) index = 0;
+
+    let mode = 'answer';
+    let viewH = 0;
+    let dragY = 0;
+    let translationOpen = false;
+    let isSnapping = false;
+
+    function storyName(q) {
+      if (q.story === '故事1') return '故事1 · 甘肃植树';
+      if (q.story === '故事2') return '故事2 · ChatGPT / OpenAI';
+      return q.story || '特殊题';
+    }
+
+    function esc(s) {
+      return String(s ?? '').replace(/[&<>"']/g, ch => ({
+        '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+      }[ch]));
+    }
+
+    function pageHTML(q, i) {
+      const points = Array.isArray(q.cuePoints) && q.cuePoints.length ? q.cuePoints : ['No cue card found for this question.'];
+      return `
+        <article class="card-page mode-answer" data-page="${i}">
+          <header class="topbar">
+            <div class="top-title">IELTS Speaking Part 2</div>
+            <div class="progress">${i + 1}/${QUESTIONS.length}</div>
+          </header>
+
+          <div class="meta-row">
+            <div class="story-tag">${esc(storyName(q))}</div>
+          </div>
+
+          <div class="question-title">${esc(q.title || q.topicCn || '')}</div>
+
+          <div class="page-indicator" aria-hidden="true">
+            <div class="active-line"></div>
+          </div>
+
+          <section class="content-wrap">
+            <div class="answer-only">
+              <h2 class="section-title"><span class="section-icon"></span><span>Full Answer</span></h2>
+              <div class="answer-text">${esc(q.fullEnglish || '')}</div>
+              ${q.keywords ? `<div class="keywords">辅助记忆：\n${esc(q.keywords)}</div>` : ''}
+            </div>
+
+            <div class="cue-only">
+              <h2 class="section-title"><span class="section-icon"></span><span>You should say:</span></h2>
+              <ul class="cue-list">${points.map(p => `<li>${esc(p)}</li>`).join('')}</ul>
+            </div>
+          </section>
+
+          <div class="translate-chip">中</div>
+        </article>
+      `;
+    }
+
+    function buildPages() {
+      track.innerHTML = QUESTIONS.map((q, i) => pageHTML(q, i)).join('');
+      track.querySelectorAll('.translate-chip').forEach(chip => {
+        chip.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const page = chip.closest('.card-page');
+          if (!page || Number(page.dataset.page) !== index || mode !== 'answer') return;
+          translationOpen ? hideTranslation() : showTranslation();
+        });
+      });
+    }
+
+    function currentPage() {
+      return track.querySelector(`.card-page[data-page="${index}"]`);
+    }
+
+    function currentContent() {
+      const p = currentPage();
+      return p ? p.querySelector('.content-wrap') : null;
+    }
+
+    function updateModeClasses() {
+      track.querySelectorAll('.card-page').forEach((p, i) => {
+        if (i === index) {
+          p.classList.toggle('mode-answer', mode === 'answer');
+          p.classList.toggle('mode-cue', mode === 'cue');
+        } else {
+          p.classList.add('mode-answer');
+          p.classList.remove('mode-cue');
+        }
+      });
+    }
+
+    function updateTranslationText() {
+      translationText.textContent = QUESTIONS[index].fullChinese || '';
+    }
+
+    function trackYFor(pageIndex, extraY = 0) {
+      viewH = app.clientHeight || window.innerHeight;
+      return -pageIndex * viewH + extraY;
+    }
+
+    function setTrackY(y, animated = false, duration = 480) {
+      track.style.setProperty('--snap-duration', duration + 'ms');
+      track.classList.toggle('anim', animated);
+      track.style.transform = `translate3d(0, ${y}px, 0)`;
+    }
+
+    function positionNow(animated = false) {
+      dragY = 0;
+      updateModeClasses();
+      updateTranslationText();
+      setTrackY(trackYFor(index), animated, animated ? 420 : 0);
+      localStorage.setItem('ielts_part2_index', String(index));
+    }
+
+    function setMode(nextMode) {
+      if (mode === nextMode) return;
+      mode = nextMode;
+      const c = currentContent();
+      if (c) c.scrollTop = 0;
+      hideTranslation();
+      updateModeClasses();
+    }
+
+    function showTranslation() {
+      translationOpen = true;
+      translationPanel.classList.add('show');
+    }
+
+    function hideTranslation() {
+      translationOpen = false;
+      translationPanel.classList.remove('show');
+    }
+
+    closeTranslation.addEventListener('click', hideTranslation);
+
+    function scrollBoundary() {
+      const c = currentContent();
+      if (!c) return { atTop: true, atBottom: true };
+      return {
+        atTop: c.scrollTop <= 2,
+        atBottom: c.scrollTop + c.clientHeight >= c.scrollHeight - 2
+      };
+    }
+
+    function canPageFromContent(dy) {
+      const b = scrollBoundary();
+      if (dy > 0 && b.atTop && index > 0) return true;
+      if (dy < 0 && b.atBottom && index < QUESTIONS.length - 1) return true;
+      return false;
+    }
+
+    function canPageDirect(dy) {
+      if (dy > 0 && index > 0) return true;
+      if (dy < 0 && index < QUESTIONS.length - 1) return true;
+      return false;
+    }
+
+    function snapTo(targetIndex, duration = 480) {
+      isSnapping = true;
+      hideTranslation();
+      const nextIndex = Math.max(0, Math.min(QUESTIONS.length - 1, targetIndex));
+      setTrackY(trackYFor(nextIndex), true, duration);
+
+      const finish = () => {
+        track.removeEventListener('transitionend', finish);
+        track.classList.remove('anim');
+        index = nextIndex;
+        mode = 'answer';
+        dragY = 0;
+        const c = currentContent();
+        if (c) c.scrollTop = 0;
+        updateModeClasses();
+        updateTranslationText();
+        setTrackY(trackYFor(index), false, 0);
+        localStorage.setItem('ielts_part2_index', String(index));
+        isSnapping = false;
+      };
+
+      track.addEventListener('transitionend', finish, { once: true });
+      window.setTimeout(() => {
+        if (isSnapping) finish();
+      }, duration + 80);
+    }
+
+    let startX = 0, startY = 0, lastX = 0, lastY = 0, dragStartY = 0, startTime = 0;
+    let axis = null;
+    let startedInContent = false;
+    let activeV = false;
+    let activeH = false;
+
+    app.addEventListener('touchstart', e => {
+      if (translationOpen || isSnapping) return;
+      const t = e.touches[0];
+      startX = lastX = t.clientX;
+      startY = lastY = t.clientY;
+      dragStartY = startY;
+      startTime = Date.now();
+      axis = null;
+      startedInContent = !!e.target.closest('.content-wrap');
+      activeV = false;
+      activeH = false;
+      dragY = 0;
+      edgeHint.textContent = '';
+      track.classList.remove('anim');
+      setTrackY(trackYFor(index), false, 0);
+    }, { passive: true });
+
+    app.addEventListener('touchmove', e => {
+      if (translationOpen || isSnapping) return;
+      const t = e.touches[0];
+      lastX = t.clientX;
+      lastY = t.clientY;
+
+      const dx = lastX - startX;
+      const dy = lastY - startY;
+      const absX = Math.abs(dx);
+      const absY = Math.abs(dy);
+
+      if (!axis && (absX > 10 || absY > 10)) {
+        axis = absX > absY ? 'x' : 'y';
+      }
+
+      if (axis === 'x') {
+        activeH = true;
+        if (absX > 14) e.preventDefault();
+        return;
+      }
+
+      if (axis === 'y') {
+        if (!activeV) {
+          const can = startedInContent ? canPageFromContent(dy) : canPageDirect(dy);
+          if (can) {
+            activeV = true;
+            dragStartY = lastY;
+            dragY = 0;
+            track.classList.remove('anim');
+          } else {
+            if (!startedInContent) {
+              const blocked = (dy > 0 && index === 0) || (dy < 0 && index === QUESTIONS.length - 1);
+              if (blocked) edgeHint.textContent = dy > 0 ? '已经是第一题' : '已经是最后一题';
+            }
+            return;
+          }
+        }
+
+        if (activeV) {
+          e.preventDefault();
+          dragY = lastY - dragStartY;
+          setTrackY(trackYFor(index, dragY), false, 0);
+        }
+      }
+    }, { passive: false });
+
+    app.addEventListener('touchend', () => {
+      if (translationOpen || isSnapping) return;
+
+      const dx = lastX - startX;
+      const activeDy = lastY - dragStartY;
+      const dt = Math.max(1, Date.now() - startTime);
+      const vx = dx / dt;
+      const vy = activeDy / dt;
+
+      if (activeV) {
+        const passDistance = Math.abs(activeDy) > Math.min(145, viewH * 0.2);
+        const passVelocity = Math.abs(vy) > 0.72 && Math.abs(activeDy) > 42;
+        let target = index;
+
+        if ((passDistance || passVelocity) && activeDy < 0 && index < QUESTIONS.length - 1) target = index + 1;
+        if ((passDistance || passVelocity) && activeDy > 0 && index > 0) target = index - 1;
+
+        snapTo(target, target === index ? 320 : 520);
+      } else if (activeH || axis === 'x') {
+        if (Math.abs(dx) > 68 || Math.abs(vx) > 0.62) {
+          if (dx < 0) setMode('cue');       // 手向左滑：提示卡片
+          else if (dx > 0) setMode('answer'); // 手向右滑：Full Answer
+        }
+      }
+
+      dragY = 0;
+      axis = null;
+      activeV = false;
+      activeH = false;
+      setTimeout(() => edgeHint.textContent = '', 500);
+    }, { passive: true });
+
+    app.addEventListener('touchcancel', () => {
+      dragY = 0;
+      snapTo(index, 320);
+      axis = null;
+      activeV = false;
+      activeH = false;
+    }, { passive: true });
+
+    window.addEventListener('resize', () => {
+      positionNow(false);
+    });
+
+    window.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown' && index < QUESTIONS.length - 1) snapTo(index + 1, 520);
+      if (e.key === 'ArrowUp' && index > 0) snapTo(index - 1, 520);
+      if (e.key === 'ArrowRight') setMode('answer');
+      if (e.key === 'ArrowLeft') setMode('cue');
+      if (e.key === 'Escape') hideTranslation();
+    });
+
+    buildPages();
+    positionNow(false);
   </script>
 </body>
 </html>
