@@ -1,0 +1,1612 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>IELTS Speaking Part 2</title>
+  <style>
+    :root {
+      --bg: #fbfcf8;
+      --text: #121614;
+      --muted: #687169;
+      --soft: #eef6e9;
+      --soft2: #f6faf3;
+      --accent: #237033;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      overscroll-behavior: none;
+    }
+
+    body {
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .app {
+      position: relative;
+      width: 100vw;
+      height: 100svh;
+      max-width: 520px;
+      margin: 0 auto;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% -10%, rgba(93, 154, 79, .08), transparent 38%),
+        var(--bg);
+    }
+
+    .card-screen {
+      position: absolute;
+      inset: 0;
+      padding: calc(var(--safe-top) + 14px) 24px calc(var(--safe-bottom) + 18px);
+      display: flex;
+      flex-direction: column;
+      background: transparent;
+      will-change: transform, opacity;
+      touch-action: pan-y;
+    }
+
+    .buffer {
+      pointer-events: none;
+      display: none;
+    }
+
+    .anim {
+      transition: transform .25s cubic-bezier(.2,.8,.2,1), opacity .25s ease;
+    }
+
+    .topbar {
+      height: 36px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      flex: 0 0 auto;
+    }
+
+    .top-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: .1px;
+    }
+
+    .progress {
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .meta-row {
+      margin-top: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex: 0 0 auto;
+    }
+
+    .story-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      max-width: 86%;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--accent);
+      font-size: 15px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .question-title {
+      margin-top: 18px;
+      font-size: clamp(25px, 6.8vw, 34px);
+      line-height: 1.1;
+      font-weight: 780;
+      letter-spacing: -.7px;
+      flex: 0 0 auto;
+    }
+
+    .page-indicator {
+      width: 48px;
+      height: 5px;
+      margin-top: 18px;
+      margin-bottom: 17px;
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .active-line {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 22px;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--accent);
+      transform: translateX(0px);
+      transition: transform .18s cubic-bezier(.2,.9,.2,1);
+    }
+
+    .mode-cue .active-line {
+      transform: translateX(26px);
+    }
+
+    .content-wrap {
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-right: 2px;
+      padding-bottom: 76px;
+      scrollbar-width: none;
+    }
+
+    .content-wrap::-webkit-scrollbar { display: none; }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--accent);
+      font-size: 18px;
+      font-weight: 760;
+      margin: 0 0 17px;
+    }
+
+    .section-icon {
+      width: 21px;
+      height: 21px;
+      border: 2px solid currentColor;
+      border-radius: 5px;
+      display: inline-block;
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .section-icon::before {
+      content: "";
+      position: absolute;
+      left: 4px;
+      right: 4px;
+      top: 6px;
+      height: 2px;
+      border-radius: 2px;
+      background: currentColor;
+      box-shadow: 0 5px 0 currentColor;
+      opacity: .85;
+    }
+
+    .answer-text {
+      font-size: 17px;
+      line-height: 1.56;
+      letter-spacing: .03px;
+      white-space: pre-wrap;
+    }
+
+    .cue-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .cue-list li {
+      position: relative;
+      margin: 0 0 17px;
+      padding: 18px 18px 18px 44px;
+      border-radius: 19px;
+      background: rgba(237, 247, 232, .82);
+      color: var(--text);
+      font-size: 18px;
+      line-height: 1.35;
+      font-weight: 620;
+    }
+
+    .cue-list li::before {
+      content: "";
+      position: absolute;
+      left: 20px;
+      top: 27px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .keywords {
+      margin-top: 22px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(237, 247, 232, .8);
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+
+    .mode-answer .cue-only,
+    .mode-cue .answer-only {
+      display: none;
+    }
+
+    .translate-chip {
+      position: absolute;
+      right: 24px;
+      bottom: calc(var(--safe-bottom) + 24px);
+      z-index: 8;
+      width: 46px;
+      height: 38px;
+      border-radius: 13px;
+      border: 1.5px solid var(--accent);
+      background: rgba(255,255,255,.78);
+      color: var(--accent);
+      font-size: 20px;
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 10px 24px rgba(16, 60, 20, .08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .mode-cue .translate-chip {
+      display: none;
+    }
+
+    .translation-panel {
+      position: absolute;
+      z-index: 20;
+      left: 16px;
+      right: 16px;
+      bottom: calc(var(--safe-bottom) + 14px);
+      max-height: 58vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      background: rgba(255,255,255,.95);
+      color: #101418;
+      border-radius: 24px;
+      padding: 18px 20px 22px;
+      box-shadow: 0 24px 80px rgba(20, 38, 19, .22);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transform: translateY(calc(100% + 40px));
+      opacity: 0;
+      transition: transform .18s ease, opacity .18s ease;
+    }
+
+    .translation-panel.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .translation-title {
+      font-size: 16px;
+      font-weight: 760;
+      color: var(--accent);
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .close-translation {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 0;
+      background: #eef6e9;
+      color: #237033;
+      font-size: 22px;
+      line-height: 28px;
+      padding: 0;
+    }
+
+    .translation-text {
+      font-size: 16px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+
+    .edge-hint {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: calc(var(--safe-bottom) + 6px);
+      text-align: center;
+      font-size: 12px;
+      color: rgba(35, 112, 51, .42);
+      pointer-events: none;
+      z-index: 12;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app" class="app">
+    <main id="currentScreen" class="card-screen"></main>
+    <main id="bufferScreen" class="card-screen buffer"></main>
+
+    <aside class="translation-panel" id="translationPanel">
+      <div class="translation-title">
+        <span>中文翻译</span>
+        <button class="close-translation" id="closeTranslation" type="button">×</button>
+      </div>
+      <div class="translation-text" id="translationText"></div>
+    </aside>
+
+    <div class="edge-hint" id="edgeHint"></div>
+  </div>
+
+  <script>
+    const QUESTIONS = [
+  {
+    "id": 1,
+    "topicCn": "克服困难成功的人",
+    "title": "Describe a person who met difficulties but succeeded",
+    "cuePoints": [
+      "Who this person is",
+      "What difficulties he met",
+      "How he overcame the difficulties",
+      "And explain how you feel about him"
+    ],
+    "story": "故事2",
+    "storyConversion": "I would talk about Sam Altman and the 2023 OpenAI leadership crisis as a concrete difficulty he overcame.",
+    "cnConversion": "讲 Sam Altman：具体讲 2023 年 OpenAI 领导层危机，他如何通过沟通和团队信任渡过困难。",
+    "keywords": "leadership crisis\nstay calm\nclear communication\nbuild trust",
+    "fullEnglish": "I would like to talk about Sam Altman, the co-founder and CEO of OpenAI. I knew about him because I started using ChatGPT for English learning and coding.\n\nOne big difficulty he met was the leadership crisis at OpenAI in 2023. I read that he suddenly left the CEO role, and the company was in a very uncertain situation. For a technology company, losing its leader can be a huge problem, because employees, users, and partners may all feel worried.\n\nHe overcame it by communicating with the team and partners. A few days later, he returned as CEO, and OpenAI also started to improve its board and management. After that, the company continued to develop ChatGPT and other AI tools.\n\nI admire him because he stayed calm in a very stressful time. From his story, I learned that when a serious problem happens, panic does not help. Clear communication and trust are much more important.",
+    "fullChinese": "我想讲 Sam Altman，他是 OpenAI 的联合创始人兼 CEO。我是因为自己开始用 ChatGPT 学英语和解决编程问题，才了解他的。\n\n他遇到的一个很大的困难，是 OpenAI 在 2023 年的领导层危机。我看到报道说，他当时突然离开 CEO 职位，公司处在非常不确定的状态。对于一家科技公司来说，突然失去领导者会是很大的问题，因为员工、用户和合作伙伴都会感到担心。\n\n他是通过和团队、合作伙伴沟通来解决的。几天之后，他重新回到 CEO 职位，OpenAI 也开始改进董事会和管理方式。之后，公司继续发展 ChatGPT 和其他 AI 工具。\n\n我佩服他是因为他在压力很大的时候还能保持冷静。我从这件事学到，当严重问题发生时，慌乱没有用，清晰沟通和信任更重要。"
+  },
+  {
+    "id": 2,
+    "topicCn": "改变重要想法",
+    "title": "Describe a time when you changed an important opinion of yours",
+    "cuePoints": [
+      "When you changed your opinion",
+      "What the original opinion was",
+      "Why you changed it",
+      "And explain how you felt about the experience"
+    ],
+    "story": "故事2",
+    "storyConversion": "Using ChatGPT changed my opinion about AI from a distant technology to a practical tool.",
+    "cnConversion": "用 ChatGPT 改变了我对 AI 的看法：它不是遥远的高科技，而是普通人能用的学习工具。",
+    "keywords": "change my view\npractical learning tool\nlearn faster",
+    "fullEnglish": "One important opinion I changed was my view of AI. In the past, I thought advanced AI was mainly for scientists or big companies. I felt it was powerful, but far away from my daily life.\n\nThis changed about two years ago, when I began to use ChatGPT. At first, I only used it to check simple English sentences. Later, I used it to practise speaking, understand difficult grammar, and solve problems in my Unity projects.\n\nI changed my opinion because I found that AI could explain hard things in simple words. It did not replace my thinking, but it helped me learn faster and become more confident.\n\nI felt surprised but also excited. Now I see AI as a practical learning tool for ordinary people. This change is important to me because it affects both my work and my IELTS preparation.",
+    "fullChinese": "我改变的一个重要想法，是我对 AI 的看法。以前我觉得高级 AI 主要是科学家或者大公司使用的东西。我觉得它很厉害，但离我的日常生活很远。\n\n大约两年前，这个想法开始改变，因为我开始使用 ChatGPT。一开始我只是用它检查简单英文句子。后来我用它练口语、理解难语法，也用它解决 Unity 项目里的问题。\n\n我改变想法是因为我发现 AI 可以用简单的话解释复杂内容。它没有代替我思考，但能帮助我学得更快，也更有信心。\n\n我当时很惊讶，也很兴奋。现在我把 AI 看成普通人也能使用的实用学习工具。这个改变对我很重要，因为它影响了我的工作和雅思准备。"
+  },
+  {
+    "id": 3,
+    "topicCn": "想颁布的环保法律",
+    "title": "Describe an environmental law you would like your country to introduce",
+    "cuePoints": [
+      "What law it should be",
+      "Why people should follow the law",
+      "Whether the law will be popular",
+      "And explain how you feel about this law"
+    ],
+    "story": "故事1",
+    "storyConversion": "I would introduce a law to reduce single-use plastic after seeing rubbish during the Gansu trip.",
+    "cnConversion": "环保法律：减少一次性塑料，原因来自甘肃植树时对环境的观察。",
+    "keywords": "single-use plastic\nreusable bags\nsmall daily changes",
+    "fullEnglish": "If I could introduce an environmental law, I would make a law to reduce single-use plastic products, especially in tourist places and natural areas.\n\nPeople should follow this law because plastic waste can stay in the environment for a long time. During my tree-planting trip in Gansu, I noticed that even small rubbish could make a natural place look worse. It made me think more seriously about daily habits.\n\nThe law would ask shops to charge for plastic bags and encourage people to use reusable bags and cups. At first, it might not be popular because some people may think it is inconvenient. But after some time, I think most people would get used to it.\n\nI would feel good about this law because it is simple and practical. It does not ask people to change everything, but it pushes them to make better choices every day.",
+    "fullChinese": "如果我可以颁布一条环保法律，我会制定一条减少一次性塑料制品的法律，尤其是在旅游区和自然景区。\n\n人们应该遵守这条法律，因为塑料垃圾会在环境中停留很久。去甘肃参加植树活动时，我注意到即使是很小的垃圾，也会让自然环境看起来变差。这让我更认真地思考日常习惯。\n\n这条法律会要求商店对塑料袋收费，并鼓励人们使用可重复使用的袋子和杯子。一开始它可能不太受欢迎，因为有些人会觉得不方便。但过一段时间，我觉得大多数人会习惯。\n\n我会支持这条法律，因为它简单实用。它不是要求人们改变一切，而是推动大家每天做更好的选择。"
+  },
+  {
+    "id": 4,
+    "topicCn": "别人帮助解决问题",
+    "title": "Describe a time when a person did something to help you solve a problem",
+    "cuePoints": [
+      "Who the person is",
+      "What the problem was",
+      "How he/she helped you",
+      "And explain how you felt about the experience"
+    ],
+    "story": "故事1",
+    "storyConversion": "My childhood friend Lulu helped me prepare for the Gansu volunteer trip when I did not know what to do.",
+    "cnConversion": "璐璐帮我准备甘肃植树活动：报名、联系组织者、列清单。",
+    "keywords": "childhood friend Lulu\npacking list\nsolve the problem step by step",
+    "fullEnglish": "I want to talk about my childhood friend Lulu, who helped me solve a problem before my Gansu tree-planting trip.\n\nAt that time, I wanted to join the volunteer activity, but I did not know how to sign up or what to prepare. I was also worried because I am not very strong physically, and the work sounded tiring.\n\nLulu helped me in a very practical way. She checked the information online, contacted the organiser with me, and made a simple packing list. She reminded me to bring sunscreen, comfortable shoes, water, and some medicine. She also told me not to overthink it and just take the first step.\n\nBecause of her help, I felt much calmer. In the end, the trip went well. I was really thankful because she did not only give advice; she actually helped me solve the problem step by step.",
+    "fullChinese": "我想讲我的发小璐璐，她在我去甘肃植树之前帮我解决了一个问题。\n\n当时我想参加这个志愿活动，但不知道怎么报名，也不知道要准备什么。我也有点担心，因为我的体力不是特别好，而植树听起来很累。\n\n璐璐用很实际的方式帮了我。她帮我在网上查信息，和我一起联系组织者，还做了一个简单的行李清单。她提醒我带防晒、舒服的鞋、水和一些药。她也告诉我不要想太多，先迈出第一步。\n\n因为她的帮助，我冷静了很多。最后这次旅行很顺利。我真的很感谢她，因为她不只是给建议，而是一步一步帮我解决了问题。"
+  },
+  {
+    "id": 5,
+    "topicCn": "包含动物的故事或书",
+    "title": "Describe a story/book with animals in it",
+    "cuePoints": [
+      "What animals are in it",
+      "What the story/book is about",
+      "Why you read the story/book",
+      "And explain what you think of this story/book"
+    ],
+    "story": "故事2",
+    "storyConversion": "I used ChatGPT to read a simple English story about a lost turtle and beach rubbish.",
+    "cnConversion": "用 ChatGPT 辅助读一个关于迷路小海龟和海滩垃圾的英文故事。",
+    "keywords": "a lost turtle\nbeach rubbish\nsimple but meaningful",
+    "fullEnglish": "I would like to talk about a short English story about a lost turtle. I found it when I was practising English reading, and I used ChatGPT to help me understand some sentences.\n\nThe animal in the story is a small sea turtle. It gets lost because there is too much rubbish on the beach, and it cannot find its way back to the sea. Later, a little girl and her father clean part of the beach and help the turtle return safely.\n\nI read this story because the language was not too difficult, and it was connected with environmental protection. I also liked it because it was simple but meaningful.\n\nI think it is a good story. It reminded me that human behaviour can affect animals, even when we do not notice it. It also gave me a good topic for English practice.",
+    "fullChinese": "我想讲一个关于迷路小海龟的英文短故事。我是在练习英语阅读时看到的，并且用 ChatGPT 帮我理解了一些句子。\n\n故事里的动物是一只小海龟。它因为海滩上有太多垃圾而迷路，找不到回到大海的路。后来，一个小女孩和她的爸爸清理了一部分海滩，并帮助小海龟安全回到海里。\n\n我读这个故事是因为它的语言不太难，而且和环保有关。我也喜欢它，因为它简单但有意义。\n\n我觉得这是一个好故事。它提醒我，人类的行为会影响动物，哪怕我们平时没有注意到。而且它也给了我一个很好的英语练习话题。"
+  },
+  {
+    "id": 6,
+    "topicCn": "喜欢拜访但不想住的家",
+    "title": "Describe a home that you like to visit but do not want to live in",
+    "cuePoints": [
+      "Where it is",
+      "What it is like",
+      "Why you like to visit it",
+      "And explain why you would not like to live there"
+    ],
+    "story": "故事1",
+    "storyConversion": "A small farmhouse-style guesthouse near the Gansu tree-planting area was nice to visit but not suitable to live in.",
+    "cnConversion": "甘肃植树区域附近的农家民宿，适合短住体验，不适合长期生活。",
+    "keywords": "farmhouse-style guesthouse\nquiet yard\nbasic but relaxing",
+    "fullEnglish": "A home I liked visiting but would not want to live in was a small farmhouse-style guesthouse near the tree-planting area in Gansu.\n\nIt was not fancy, but it had a small yard, some plants, and a very quiet atmosphere. I liked visiting it because it felt completely different from my city life. In the evening, we could sit in the yard, talk with other volunteers, and look at the sky. It was simple but relaxing.\n\nHowever, I would not want to live there for a long time. The location was far from the city, and it was not very convenient to buy things or use fast internet. The room was also a little dry and basic.\n\nSo I enjoyed it as a short visit, but I think I am still more suitable for city life.",
+    "fullChinese": "一个我喜欢拜访但不想长期居住的家，是甘肃植树区域附近的一个农家风格民宿。\n\n它并不豪华，但有一个小院子、一些植物，氛围非常安静。我喜欢拜访那里，是因为它和我的城市生活完全不同。晚上我们可以坐在院子里，和其他志愿者聊天，看天空。它很简单，但让人放松。\n\n不过，我不想长期住在那里。那个地方离城市比较远，买东西不方便，网络也不是很好。房间也有点干燥，条件比较基础。\n\n所以我很享受短期拜访，但我觉得自己还是更适合城市生活。"
+  },
+  {
+    "id": 7,
+    "topicCn": "推荐旅行过的地方",
+    "title": "Describe a place you have travelled to that you would like to recommend to others",
+    "cuePoints": [
+      "What it is",
+      "Where it is",
+      "What you saw and did there",
+      "And explain why you would like to recommend it to others"
+    ],
+    "story": "故事1",
+    "storyConversion": "I would recommend Gansu because I joined a tree-planting activity and learned something meaningful there.",
+    "cnConversion": "推荐甘肃：不只是旅游，还能通过植树活动获得有意义的体验。",
+    "keywords": "meaningful trip\nmore than sightseeing\nsmall actions",
+    "fullEnglish": "A place I would like to recommend is Gansu, especially a tree-planting area I visited during a volunteer trip.\n\nIt is in northwest China, and it gives people a very different travel experience. During the trip, I did not only take photos or eat local food. I joined a tree-planting activity, worked with other volunteers, and learned how hard it is to protect the environment in a dry area.\n\nI saw wide open land, strong wind, and young trees that had just been planted. The scenery was not like a famous seaside city, but it felt real and meaningful.\n\nI would recommend it to people who want more than normal sightseeing. It is a good place to understand nature, teamwork, and the value of small actions. I felt tired after the trip, but I also felt proud.",
+    "fullChinese": "我想推荐的地方是甘肃，尤其是我在志愿旅行中去过的一个植树区域。\n\n它位于中国西北，能给人一种很不一样的旅行体验。在那次旅行中，我不只是拍照或吃当地美食。我参加了植树活动，和其他志愿者一起工作，也了解了在干旱地区保护环境有多不容易。\n\n我看到了开阔的土地、很大的风，以及刚刚种下的小树苗。那里的风景不像著名海边城市那样漂亮，但它很真实，也很有意义。\n\n我会把它推荐给那些不只想普通观光的人。这里能让人理解自然、团队合作和小行动的价值。旅行后我很累，但也很自豪。"
+  },
+  {
+    "id": 8,
+    "topicCn": "遇到的科技问题",
+    "title": "Describe a challenging technological problem you faced",
+    "cuePoints": [
+      "What the problem was",
+      "When and where you faced it",
+      "How challenging it was",
+      "And explain how you solved it"
+    ],
+    "story": "故事2",
+    "storyConversion": "I faced a Unity bug and solved it by using ChatGPT to list possible causes and then testing them myself.",
+    "cnConversion": "遇到 Unity bug，用 ChatGPT 帮助分析，再自己逐步测试解决。",
+    "keywords": "Unity bug\nbreak it into steps\ntest one by one",
+    "fullEnglish": "A challenging technological problem I faced was a bug in one of my Unity projects. It happened at work when I was changing a game feature.\n\nThe problem was that the game did not crash directly, but one UI function behaved in a strange way. The error message was not clear, so I did not know which part of the code caused it. It was challenging because I had already checked the obvious places, but the problem was still there.\n\nI solved it by breaking the problem into smaller steps. I used ChatGPT to help me think about possible reasons, but I did not copy the answer directly. I tested each possible reason one by one. Finally, I found that the problem came from an old event listener that had not been removed.\n\nI felt relieved after solving it. It reminded me that debugging needs patience and a clear method.",
+    "fullChinese": "我遇到过的一个有挑战的科技问题，是我在一个 Unity 项目里遇到的 bug。它发生在工作中，当时我正在修改一个游戏功能。\n\n问题是游戏没有直接崩溃，但某个 UI 功能表现得很奇怪。报错信息也不清楚，所以我不知道是哪一段代码导致的。它很有挑战，因为我已经检查了明显的地方，但问题还是存在。\n\n我通过把问题拆成小步骤来解决。我用 ChatGPT 帮我分析可能原因，但没有直接复制答案。我一个一个测试可能性。最后我发现问题来自一个旧的事件监听，没有被移除。\n\n解决后我很放松。这件事提醒我，调试需要耐心，也需要清晰的方法。"
+  },
+  {
+    "id": 9,
+    "topicCn": "长时间未收到回复",
+    "title": "Describe a time when you sent a message or an email to someone but received no reply for a long time",
+    "cuePoints": [
+      "Who you sent it to",
+      "What the message/email was about",
+      "Whether you finally received the reply",
+      "And explain how you felt about the experience"
+    ],
+    "story": "故事1",
+    "storyConversion": "I waited for the Gansu volunteer organiser to reply and finally solved it by following up politely.",
+    "cnConversion": "报名甘肃植树活动时，组织者很久没回复，后来礼貌跟进解决。",
+    "keywords": "wait for a reply\nfollow up politely\nfeel relieved",
+    "fullEnglish": "A time when I did not receive a reply for a long time happened before my Gansu volunteer trip.\n\nI sent a message to the organiser of the tree-planting activity. I wanted to ask about the meeting time, the place, and what we should bring. However, after I sent the message, I did not get a reply for several days.\n\nI felt a little anxious because I needed to plan my time and buy some things in advance. I also wondered if the activity had been cancelled. Later, I asked Lulu to help me check another contact number, and I sent a polite follow-up message. Finally, the organiser replied and explained that they had been busy arranging transport for the volunteers.\n\nI felt relieved when I got the reply. This experience taught me to follow up politely instead of just waiting and worrying.",
+    "fullChinese": "我长时间没有收到回复的一次经历，发生在我去甘肃参加志愿活动之前。\n\n我给植树活动的组织者发了消息，想问集合时间、地点，以及我们需要带什么。但是我发完消息后，好几天都没有收到回复。\n\n我有点焦虑，因为我需要安排时间，也要提前买一些东西。我还担心活动是不是取消了。后来，璐璐帮我查了另一个联系方式，我又礼貌地发了一条跟进消息。最后组织者回复了，说他们一直在忙着安排志愿者的交通。\n\n收到回复后我松了一口气。这次经历让我明白，与其一直等待和担心，不如礼貌地跟进。"
+  },
+  {
+    "id": 10,
+    "topicCn": "擅长学习和说语言的人",
+    "title": "Describe a person who is good at learning and speaking new languages",
+    "cuePoints": [
+      "How you got to know him/her",
+      "How he/she learns a new language",
+      "What languages he/she can speak",
+      "And explain how you feel about him/her"
+    ],
+    "story": "故事2",
+    "storyConversion": "I would talk about a colleague who learns English with ChatGPT and practises every day.",
+    "cnConversion": "讲一位同事用 ChatGPT 学英语，持续练习，学习能力很强。",
+    "keywords": "learn steadily\nnot afraid of mistakes\npractise every day",
+    "fullEnglish": "I would like to talk about a colleague who is good at learning and speaking English. I got to know her at work because we were both game developers.\n\nShe learns English in a very steady way. She does not only memorise words. She listens to short videos, writes down useful expressions, and uses ChatGPT to practise simple conversations. When she makes mistakes, she asks why the sentence is wrong and tries to say it again.\n\nShe can speak Chinese, of course, and her English is good enough for work communication. She is also learning a little Japanese because she likes Japanese games.\n\nI feel impressed by her because she is not afraid of making mistakes. Her method is not magical, but she keeps doing it every day. I think that is why she improves faster than many people.",
+    "fullChinese": "我想讲一位很擅长学习和说英语的同事。我是在工作中认识她的，因为我们都是游戏开发者。\n\n她学习英语的方式很稳定。她不只是背单词，而是会听短视频、记录有用表达，还会用 ChatGPT 练简单对话。犯错时，她会问为什么这个句子错了，然后再说一遍。\n\n她当然会说中文，英语也足够用于工作沟通。她还在学一点日语，因为她喜欢日本游戏。\n\n我很佩服她，因为她不害怕犯错。她的方法并不神奇，但她每天坚持做。所以我觉得这就是她进步比很多人快的原因。"
+  },
+  {
+    "id": 11,
+    "topicCn": "重要决定",
+    "title": "Describe an important decision that you made",
+    "cuePoints": [
+      "What the decision was",
+      "How you made your decision",
+      "What the results of the decision were",
+      "And explain why it was important"
+    ],
+    "story": "故事1",
+    "storyConversion": "I decided to join a tree-planting volunteer activity in Gansu after Lulu encouraged me.",
+    "cnConversion": "重要决定：在璐璐鼓励下，决定参加甘肃植树活动。",
+    "keywords": "important decision\njoin a volunteer activity\nstep out of my routine",
+    "fullEnglish": "An important decision I made was to join a tree-planting volunteer activity in Gansu.\n\nI made this decision after seeing some news about tree planting in dry areas. At first, I only thought it was meaningful, but I did not think I would really go. Later, my childhood friend Lulu encouraged me. She said we always talk about wanting to do something useful, so maybe we should actually try once.\n\nThe result was better than I expected. I learned how to plant young trees, worked with other volunteers, and saw how hard environmental work can be. I was tired, but I felt proud after finishing the activity.\n\nIt was important because it pushed me out of my normal routine. I usually spend most of my time in front of a computer, but that decision helped me understand nature and responsibility in a real way.",
+    "fullChinese": "我做过的一个重要决定，是参加一次甘肃的植树志愿活动。\n\n我是在看到一些关于干旱地区植树的新闻后做出这个决定的。一开始我只是觉得这件事很有意义，但没想到自己真的会去。后来，我的发小璐璐鼓励了我。她说我们总是说想做点有用的事情，也许应该真的试一次。\n\n结果比我想象得更好。我学会了怎么种小树苗，和其他志愿者一起工作，也看到了环保工作有多辛苦。虽然我很累，但完成活动后很自豪。\n\n这个决定很重要，因为它让我走出了平时的生活。我平时大部分时间都坐在电脑前，但这个决定让我真实地理解了自然和责任。"
+  },
+  {
+    "id": 12,
+    "topicCn": "电子产品故障",
+    "title": "Describe a time when you had a problem with using an electronic device",
+    "cuePoints": [
+      "When it happened",
+      "Where it happened",
+      "What the problem was",
+      "And explain how you solved the problem at last"
+    ],
+    "story": "故事2",
+    "storyConversion": "My laptop froze while I was using Unity, and I solved it carefully with help from my phone and ChatGPT.",
+    "cnConversion": "电脑做 Unity 项目时卡死，用手机和 ChatGPT 查方法，最终安全重启解决。",
+    "keywords": "laptop froze\nrestart safely\nback up files",
+    "fullEnglish": "A time when I had a problem with an electronic device was when my laptop suddenly froze while I was working on a game project.\n\nIt happened at home in the evening. I was editing a Unity scene, and the computer stopped responding. I was nervous because I had not saved all the changes, and I was afraid I might lose my work.\n\nI solved the problem slowly. First, I waited for a few minutes instead of pressing many buttons. Then I used my phone to search for possible solutions and asked ChatGPT what I should check. After that, I forced the program to close and restarted the laptop. Luckily, Unity had saved part of the scene automatically.\n\nI felt lucky and also a bit foolish. Since then, I have tried to save my work more often and back up important files.",
+    "fullChinese": "一次电子产品故障，是我的笔记本电脑在做游戏项目时突然卡死。\n\n这件事发生在晚上，我在家里编辑一个 Unity 场景，电脑突然没有反应了。我很紧张，因为有些修改还没有保存，我担心工作会丢失。\n\n我慢慢地解决了这个问题。首先，我没有乱按按键，而是等了几分钟。然后我用手机搜索可能的解决方法，也问了 ChatGPT 应该检查什么。之后我强制关闭程序并重启电脑。幸运的是，Unity 自动保存了一部分场景。\n\n我当时觉得很幸运，也有点觉得自己太粗心。从那以后，我尽量更频繁地保存工作，也会备份重要文件。"
+  },
+  {
+    "id": 13,
+    "topicCn": "当地新闻",
+    "title": "Describe a piece of local news that people are interested in",
+    "cuePoints": [
+      "What it was about",
+      "Where you saw/heard it",
+      "Who was involved",
+      "And explain why people were interested in it"
+    ],
+    "story": "故事1",
+    "storyConversion": "I saw local news about tree planting and desert control in Gansu, which later pushed me to join a volunteer activity.",
+    "cnConversion": "甘肃治沙/植树新闻，让我后来决定参加志愿活动。",
+    "keywords": "local news\ndesert control\npositive change",
+    "fullEnglish": "A piece of local news that interested me was about tree planting and desert control in Gansu.\n\nI saw it online earlier this year. The news showed local people and volunteers planting trees in dry areas. It also explained that tree planting is not as simple as putting a tree in the ground. People need to choose the right plants, water them, and protect them from strong wind.\n\nThe people involved included local workers, volunteers, and some young students. I think people were interested in the news because it showed a positive change. It was not just about a problem; it was about people trying to solve the problem.\n\nThis news impressed me because it made environmental protection feel closer to normal life. It was also one of the reasons why I later decided to join a tree-planting activity myself.",
+    "fullChinese": "一条让我感兴趣的当地新闻，是关于甘肃植树和治沙的。\n\n我今年早些时候在网上看到了这条新闻。新闻展示了当地人和志愿者在干旱地区种树。它还解释说，种树并不是简单地把树放进土里。人们需要选择合适的植物、浇水，还要保护树苗不被大风影响。\n\n参与的人包括当地工作人员、志愿者和一些年轻学生。我觉得大家对这条新闻感兴趣，是因为它展示了一种积极的改变。它不只是讲一个问题，而是讲人们在努力解决问题。\n\n这条新闻让我印象很深，因为它让环保变得更贴近普通生活。这也是我后来决定参加植树活动的原因之一。"
+  },
+  {
+    "id": 14,
+    "topicCn": "名人广告",
+    "title": "Describe an advertisement with a famous person in it",
+    "cuePoints": [
+      "Who the person is",
+      "Where you can see it",
+      "What the advertisement is about",
+      "And explain how you feel about the advertisement"
+    ],
+    "story": "故事2",
+    "storyConversion": "I saw a short online advertisement about ChatGPT with Sam Altman speaking about AI.",
+    "cnConversion": "名人广告：一个包含 Sam Altman 的 ChatGPT 线上科技宣传视频。",
+    "keywords": "online advertisement\ntechnology product\nhelp ordinary people",
+    "fullEnglish": "I would like to talk about a short online advertisement for ChatGPT. It included Sam Altman, the CEO of OpenAI, speaking about how AI can help people learn and work.\n\nI saw it on a short-video platform. It was not like a normal advertisement with a singer or an actor. It was more like a promotional video for a technology product. The video showed people using AI to write, study, and solve problems, and it also included a short clip of Sam Altman talking about the future of AI.\n\nI felt interested because I actually use ChatGPT in my daily life. As a game developer and IELTS learner, I know how useful it can be when used in the right way.\n\nI liked the advertisement because it did not feel too noisy. It focused on a real product and showed how technology can help ordinary people.",
+    "fullChinese": "我想讲一个关于 ChatGPT 的线上短广告，里面有 OpenAI 的 CEO Sam Altman，讲 AI 如何帮助人们学习和工作。\n\n我是在短视频平台上看到的。它不像那种请歌手或演员拍的传统广告，更像是一个科技产品宣传视频。视频里展示了人们用 AI 写作、学习、解决问题，也有一小段 Sam Altman 谈 AI 未来的片段。\n\n我觉得它很有意思，因为我自己日常就会使用 ChatGPT。作为游戏开发者和雅思学习者，我知道如果使用方法正确，它真的很有帮助。\n\n我喜欢这个广告，因为它没有特别吵。它关注真实产品，也展示了科技如何帮助普通人。"
+  },
+  {
+    "id": 15,
+    "topicCn": "看过的现场比赛",
+    "title": "Describe a live sport match you have ever watched",
+    "cuePoints": [
+      "What it was",
+      "When you watched",
+      "What it was like",
+      "And explain how you felt about it"
+    ],
+    "story": "故事1",
+    "storyConversion": "During the Gansu trip, I watched a small local basketball match after the tree-planting work.",
+    "cnConversion": "甘肃植树结束后，和璐璐一起看当地篮球赛。",
+    "keywords": "local basketball match\ncheer loudly\nrelax after work",
+    "fullEnglish": "A live sport match I watched was a small local basketball match during my trip to Gansu.\n\nIt happened one evening after the tree-planting work. Some volunteers told us there was a basketball match near a local school, so Lulu and I went to watch it together.\n\nIt was not a professional match, but the atmosphere was very lively. The players were mostly local students and young people. They played hard, and people around the court cheered loudly. I liked the feeling because everyone looked relaxed after a tiring day.\n\nI felt happy watching it. It was simple, but it helped me understand the local life a little better. After spending the day planting trees, watching the match was a good way to relax.",
+    "fullChinese": "我看过的一场现场比赛，是去甘肃期间看的一场当地篮球赛。\n\n这件事发生在植树结束后的一个晚上。有些志愿者告诉我们，附近一所学校旁边有篮球赛，所以我和璐璐一起去看了。\n\n它不是职业比赛，但气氛很热闹。球员大多是当地学生和年轻人。他们打得很认真，场边的人也一直在加油。我很喜欢那种感觉，因为大家在辛苦一天后都放松下来了。\n\n我看得很开心。比赛很简单，但让我更了解了一点当地生活。种了一天树之后，看这场比赛是很好的放松方式。"
+  },
+  {
+    "id": 16,
+    "topicCn": "特殊场合下的食物",
+    "title": "Describe a kind of food that you ate at special occasions",
+    "cuePoints": [
+      "What it is",
+      "What occasion it was",
+      "Why you would like to eat it",
+      "And explain how you feel about it"
+    ],
+    "story": "故事1",
+    "storyConversion": "After finishing the Gansu tree-planting activity, we had noodles together as a small celebration.",
+    "cnConversion": "植树活动结束后的庆祝饭：一碗简单但难忘的面。",
+    "keywords": "simple bowl of noodles\nsmall celebration\nfeel satisfied",
+    "fullEnglish": "A special food I remember was a simple bowl of noodles we ate after finishing the tree-planting activity in Gansu.\n\nThe occasion was the last evening of the volunteer activity. Everyone was tired because we had worked outside for several days. The meal was not expensive. We had noodles, vegetables, and some local dishes. But it felt special because we ate together as a team.\n\nI liked eating it because the food was warm and filling. More importantly, it felt like a small celebration. We talked about the difficult parts of the trip and laughed about our mistakes.\n\nI felt really satisfied. The noodles were not the best food I have ever eaten, but because of the occasion, I still remember them clearly.",
+    "fullChinese": "我记得的一种特殊场合下吃的食物，是甘肃植树活动结束后吃的一碗简单的面。\n\n那个场合是志愿活动最后一个晚上。大家都很累，因为我们已经在户外工作了好几天。那顿饭并不贵，我们吃了面条、蔬菜和一些当地菜。但它很特别，因为我们是作为一个团队一起吃的。\n\n我喜欢吃那碗面，因为它又热又管饱。更重要的是，它像是一个小小的庆祝。我们聊了旅途中辛苦的部分，也笑着说起自己犯的小错误。\n\n我当时非常满足。那碗面不是我吃过最好的食物，但因为那个场合，我到现在还记得很清楚。"
+  },
+  {
+    "id": 17,
+    "topicCn": "长期追求/目标",
+    "title": "Describe a long-term goal/ambition you would like to achieve",
+    "cuePoints": [
+      "How long you have had this goal/ambition",
+      "What it is",
+      "How you will achieve it",
+      "And explain why you set it"
+    ],
+    "story": "故事2",
+    "storyConversion": "My long-term goal is to use AI better for game development, English learning, and future study.",
+    "cnConversion": "长期目标：更好地把 AI 用在游戏开发、英语学习和未来学习中。",
+    "keywords": "long-term goal\nAI and game development\nask better questions",
+    "fullEnglish": "A long-term goal I would like to achieve is to become better at using AI in game development and English learning.\n\nI have had this goal for about two years, since I started using ChatGPT. At first, I only used it to check English sentences. Later, I realised that AI could also help me understand programming problems and create game ideas.\n\nTo achieve this goal, I plan to keep learning English, improve my technical skills, and build small projects by myself. I also want to learn how to ask better questions, because AI gives better answers when the question is clear.\n\nI set this goal because it connects with my future. I am a game developer, and I also want to study more in the future. If I can use AI well, I think I can learn faster and make more useful products.",
+    "fullChinese": "我想实现的一个长期目标，是更好地把 AI 用在游戏开发和英语学习中。\n\n我有这个目标大约两年了，从我开始使用 ChatGPT 之后就有了。一开始我只是用它检查英文句子。后来我发现 AI 也可以帮助我理解编程问题，产生游戏创意。\n\n为了实现这个目标，我计划继续学英语，提高技术能力，并自己做一些小项目。我也想学习如何提出更好的问题，因为问题越清楚，AI 给出的回答就越有用。\n\n我设定这个目标是因为它和我的未来有关。我是游戏开发者，也希望以后继续学习。如果我能更好地使用 AI，我觉得自己可以学得更快，也能做出更有用的产品。"
+  },
+  {
+    "id": 18,
+    "topicCn": "在团队中工作",
+    "title": "Describe a time when you worked in a group",
+    "cuePoints": [
+      "What you did",
+      "Who you worked with",
+      "What problems you faced",
+      "And explain why you worked in the group"
+    ],
+    "story": "故事1",
+    "storyConversion": "I worked with Lulu, students, and a local worker to plant trees in Gansu.",
+    "cnConversion": "甘肃植树中和璐璐、学生、当地工作人员一起合作。",
+    "keywords": "work in a group\nstrong wind\nfollow instructions",
+    "fullEnglish": "A time when I worked in a group was during the tree-planting activity in Gansu.\n\nWe worked with several volunteers. Some people dug holes, some carried young trees, and others brought water. Lulu and I were in a small group with two students and one local worker.\n\nOne problem we faced was that the wind was strong, so the young trees could not stand well at first. The local worker showed us how to hold the tree straight and press the soil more tightly. We followed his instructions and slowly became faster.\n\nWe worked in a group because one person could not finish everything alone. The work needed strength, patience, and cooperation.\n\nI felt tired but happy. This experience showed me that teamwork is not just a nice word. When the task is difficult, a good group really makes the work easier.",
+    "fullChinese": "我在团队中工作的一次经历，是在甘肃参加植树活动的时候。\n\n我们和几个志愿者一起工作。有的人挖坑，有的人搬小树苗，还有的人负责取水。我和璐璐和两个学生、一个当地工作人员分在一个小组。\n\n我们遇到的一个问题是风很大，所以小树苗一开始站不稳。当地工作人员教我们怎么把树扶直，并把土压得更紧。我们按照他的指导做，慢慢变得更快了。\n\n我们需要团队合作，是因为一个人不可能完成所有事情。这个工作需要体力、耐心和配合。\n\n我很累，但也很开心。这次经历让我明白，团队合作不是一句空话。任务困难时，一个好的团队真的能让事情更容易。"
+  },
+  {
+    "id": 19,
+    "topicCn": "近期改变的计划",
+    "title": "Describe a plan that you had to change recently",
+    "cuePoints": [
+      "When this happened",
+      "What made you change the plan",
+      "What the new plan was",
+      "And how you felt about the change"
+    ],
+    "story": "故事2",
+    "storyConversion": "I changed my IELTS speaking plan from memorising many answers to using two flexible story lines.",
+    "cnConversion": "近期改变计划：从背很多答案，改成用两个故事主线灵活应对。",
+    "keywords": "change my plan\ntwo story lines\neasier to remember",
+    "fullEnglish": "A plan I had to change recently was my IELTS speaking practice plan.\n\nOriginally, I planned to memorise many separate answers for Part 2. I thought the more answers I prepared, the safer I would feel. But after practising for a while, I found it was too difficult. I often mixed different answers together, and some of them sounded unnatural.\n\nSo I changed the plan. Instead of preparing many unrelated stories, I decided to use two main story lines: one about ChatGPT and OpenAI, and one about the Gansu tree-planting trip. Then I changed each story slightly to fit different cue cards.\n\nAt first, I felt worried because the new method looked risky. But later I felt more relaxed. It made my answers easier to remember and more connected to my real life.",
+    "fullChinese": "我最近改变的一个计划，是我的雅思口语 Part 2 练习计划。\n\n原本我打算背很多篇不同的答案。我以为准备得越多就越安全。但练了一段时间后，我发现这样太难了。我经常把不同答案混在一起，而且有些听起来不自然。\n\n所以我改变了计划。我不再准备很多互相无关的故事，而是决定使用两条主线：一条关于 ChatGPT 和 OpenAI，一条关于甘肃植树。然后根据不同题目稍微调整故事。\n\n一开始我有点担心，因为新方法看起来有风险。但后来我感觉轻松多了。这样答案更容易记，也更贴近我的真实生活。"
+  },
+  {
+    "id": 20,
+    "topicCn": "商业上很成功的人",
+    "title": "Describe a person you know who has a successful business",
+    "cuePoints": [
+      "Who this person is",
+      "How you got to know him/her",
+      "Why and how he/she started the business",
+      "What business he/she does",
+      "And explain why you think the business is successful"
+    ],
+    "story": "故事2",
+    "storyConversion": "I would talk about Sam Altman and OpenAI because ChatGPT became a successful product that ordinary people can use.",
+    "cnConversion": "商业成功：Sam Altman 和 OpenAI 让 ChatGPT 成为普通人能用的成功产品。",
+    "keywords": "successful product\nsolve real problems\nordinary users",
+    "fullEnglish": "I would like to talk about Sam Altman, who is connected with the business side of OpenAI.\n\nI got to know him through ChatGPT. I am not his friend, of course, but as a user and a game developer, I became interested in the company behind the product.\n\nOpenAI started as an AI research organisation, and later ChatGPT became a very successful product. I think the business is successful because it solves real problems for many people. For example, I use ChatGPT to learn English, understand technical ideas, and get help when I am stuck in coding.\n\nWhat I find impressive is that the product is not only for experts. Many ordinary people can use it in study and work.\n\nSo for me, Sam Altman is successful not just because of money, but because he helped bring a difficult technology into daily life.",
+    "fullChinese": "我想讲 Sam Altman，他和 OpenAI 的商业发展有很大关系。\n\n我是通过 ChatGPT 认识他的。当然，我不是他的朋友，但作为一个用户和游戏开发者，我对这个产品背后的公司产生了兴趣。\n\nOpenAI 最初是一个 AI 研究机构，后来 ChatGPT 成为了非常成功的产品。我觉得这个业务成功，是因为它解决了很多人的真实问题。比如，我用 ChatGPT 学英语、理解技术概念，也会在写代码卡住时寻求帮助。\n\n让我印象深刻的是，这个产品不只是专家能用。很多普通人也可以把它用在学习和工作中。\n\n所以对我来说，Sam Altman 的成功不只是因为钱，而是因为他帮助把一项复杂技术带进了日常生活。"
+  },
+  {
+    "id": 21,
+    "topicCn": "想从事医疗行业的人",
+    "title": "Describe a person you know who would like to choose a career in the medical field (e.g. a doctor, a nurse)",
+    "cuePoints": [
+      "When you knew him/her",
+      "When he/she started to think about that",
+      "What he/she would like to do",
+      "And explain why he/she would like to choose this career"
+    ],
+    "story": "故事1",
+    "storyConversion": "I would talk about Lulu's younger cousin, who wants to become a nurse or doctor because of his family experience.",
+    "cnConversion": "想从事医疗行业的人：璐璐的表弟，因为家人经历想做护士或医生。",
+    "keywords": "medical field\nhelp people\npatience and responsibility",
+    "fullEnglish": "A person I know who would like to work in the medical field is Lulu's younger cousin.\n\nI first met him when Lulu showed me some photos from her family gathering, and later I talked with him once during a video call. He started to think about this career in high school, because his grandmother was often ill, and he saw how important nurses and doctors were to a family.\n\nHe would like to become a nurse or a doctor in the future. He says the job is tiring, but it is meaningful because it can really help people.\n\nI think his reason is quite sincere. He is not choosing it only because people say it is a stable job. He actually wants to take care of others. I respect him because medical work needs patience, responsibility, and kindness.",
+    "fullChinese": "我认识的一个想从事医疗行业的人，是璐璐的一个表弟。\n\n我第一次知道他，是璐璐给我看家人聚会照片的时候，后来我也在一次视频通话中和他聊过。他在高中时开始考虑这个职业，因为他的奶奶经常生病，他看到了医生和护士对一个家庭有多重要。\n\n他将来想成为护士或者医生。他说这份工作很累，但很有意义，因为它真的能帮助别人。\n\n我觉得他的理由很真诚。他不是只因为别人说医疗行业稳定才选择它，而是真的想照顾别人。我很尊重他，因为医疗工作需要耐心、责任感和善良。"
+  },
+  {
+    "id": 22,
+    "topicCn": "想颁布的新法律",
+    "title": "Describe a new law you would like to introduce in your country",
+    "cuePoints": [
+      "What law it is",
+      "What changes this law has",
+      "Whether this new law will be popular",
+      "How you came up with the new law",
+      "And explain how you feel about this new law"
+    ],
+    "story": "特殊",
+    "storyConversion": "I would introduce a stricter public smoking law because second-hand smoke affects people in public spaces.",
+    "cnConversion": "新法律：更严格的公共场所禁烟，重点是二手烟和公共空间。",
+    "keywords": "public smoking ban\nsecond-hand smoke\nclear fine",
+    "fullEnglish": "If I could introduce a new law, I would make a stricter law about smoking in public places.\n\nThis law would ban smoking in indoor public areas, building entrances, public toilets, and crowded outdoor places. It would also make the fine clearer, so people would know the result before they break the rule.\n\nI came up with this law because I often feel uncomfortable when people smoke near entrances or in public toilets. Even if I do not smoke, I still have to breathe the smoke. I think second-hand smoke is unfair to other people.\n\nThis law might not be popular with smokers at first, because it limits their habits. But I think most people would support it, especially families with children.\n\nI would feel happy if this law became real, because it would make public spaces cleaner and more comfortable.",
+    "fullChinese": "如果我可以颁布一条新法律，我会制定一条更严格的公共场所禁烟法律。\n\n这条法律会禁止在室内公共区域、大楼门口、公共卫生间和拥挤的户外场所吸烟。它也会让罚款更加清楚，让人们在违反规则前就知道后果。\n\n我想到这条法律，是因为我经常在大楼门口或公共卫生间附近闻到烟味，会觉得很不舒服。即使我自己不吸烟，也必须吸入这些烟。我觉得二手烟对其他人不公平。\n\n这条法律一开始可能不太受吸烟者欢迎，因为它限制了他们的习惯。但我觉得大多数人会支持它，尤其是有孩子的家庭。\n\n如果这条法律真的实行，我会很开心，因为公共空间会更干净、更舒服。"
+  },
+  {
+    "id": 23,
+    "topicCn": "喜欢在家/花园种菜的人",
+    "title": "Describe a person who loves to grow plants (e.g. vegetables, flowers) at home or in the garden",
+    "cuePoints": [
+      "Who this person is",
+      "What plants he/she grows",
+      "How he/she grows the plants",
+      "And explain why he/she loves growing plants"
+    ],
+    "story": "故事1",
+    "storyConversion": "My childhood friend Lulu grows herbs and vegetables on her balcony and enjoys taking care of them.",
+    "cnConversion": "璐璐在阳台种香草和蔬菜，喜欢照顾植物。",
+    "keywords": "Lulu\nbalcony garden\nfeel close to nature",
+    "fullEnglish": "A person I know who loves growing plants is my childhood friend Lulu.\n\nShe grows some herbs and vegetables on her balcony, such as mint, small tomatoes, and green onions. Her balcony is not big, but she keeps it very tidy.\n\nShe grows them in small pots. Every morning, she checks the soil and waters the plants if needed. Sometimes she also reads online posts to learn how much sunlight different plants need. She is not a professional gardener, but she is very patient.\n\nI think she loves growing plants because it gives her a peaceful feeling. She works in a busy environment, so taking care of plants helps her relax. It also makes her feel close to nature.\n\nI like this side of her. It was also one reason why she was interested in joining the Gansu tree-planting activity with me.",
+    "fullChinese": "我认识的一个喜欢种植物的人，是我的发小璐璐。\n\n她在阳台上种了一些香草和蔬菜，比如薄荷、小番茄和小葱。她的阳台不大，但被她打理得很整齐。\n\n她把植物种在小花盆里。每天早上，她会检查土壤，需要的时候就浇水。有时候她也会看网上的帖子，学习不同植物需要多少阳光。她不是专业园艺师，但非常有耐心。\n\n我觉得她喜欢种植物，是因为这能给她一种平静的感觉。她的工作环境比较忙，所以照顾植物能让她放松，也让她觉得更接近自然。\n\n我喜欢她这一点。这也是她后来愿意和我一起参加甘肃植树活动的原因之一。"
+  },
+  {
+    "id": 24,
+    "topicCn": "发小",
+    "title": "Describe a friend from your childhood",
+    "cuePoints": [
+      "Who he/she is",
+      "Where and how you met each other",
+      "What you often did together",
+      "And explain what made you like him/her"
+    ],
+    "story": "故事1",
+    "storyConversion": "I would talk about Lulu, my childhood friend, who is practical, warm, and supportive.",
+    "cnConversion": "发小璐璐：小时候认识，性格温暖、实际、可靠。",
+    "keywords": "childhood friend Lulu\nwarm and practical\nsomeone I can trust",
+    "fullEnglish": "I would like to talk about my childhood friend Lulu. We knew each other when we were very young because our families lived near each other.\n\nWhen we were children, we often played simple games, watched cartoons, and shared snacks after school. We were not always together every day, but we stayed in touch as we grew up.\n\nWhat made me like her was her warm personality. She is practical and patient. For example, when I wanted to join the Gansu tree-planting activity, she helped me check the information and prepare everything. She did not laugh at my worries; instead, she helped me solve them.\n\nI like her because she makes me feel supported. Even though we are both busy now, I still feel that she is someone I can trust. That is why she is an important childhood friend to me.",
+    "fullChinese": "我想讲我的发小璐璐。我们很小的时候就认识了，因为我们的家住得比较近。\n\n小时候，我们经常一起玩简单的游戏、看动画片，放学后还会一起分享零食。我们不是每天都在一起，但长大后也一直保持联系。\n\n我喜欢她的原因是她性格很温暖。她很实际，也很有耐心。比如，当我想参加甘肃植树活动时，她帮我查信息、准备东西。她没有笑话我的担心，而是帮我解决问题。\n\n我喜欢她，因为她让我觉得被支持。虽然现在我们都很忙，但我仍然觉得她是一个可以信任的人。这就是为什么她对我来说是很重要的发小。"
+  },
+  {
+    "id": 25,
+    "topicCn": "无聊的地方",
+    "title": "Describe a boring place",
+    "cuePoints": [
+      "Where it is",
+      "Who you went there with",
+      "What you did there",
+      "And explain why you think it is a boring place"
+    ],
+    "story": "故事1",
+    "storyConversion": "A small waiting room at a remote bus station on the way to Gansu was boring because we waited for hours.",
+    "cnConversion": "去甘肃路上的偏远汽车站等候室，很无聊，因为等车很久。",
+    "keywords": "remote bus station\nweak signal\nwait for hours",
+    "fullEnglish": "A boring place I visited was a small waiting room at a remote bus station on the way to the Gansu tree-planting area.\n\nI went there with Lulu and a few other volunteers. We had to wait because the next bus was late. At first, I thought it would only take a short time, but we waited for almost two hours.\n\nThere was almost nothing to do there. The room had a few chairs, a small shop, and an old television, but the TV sound was very low. The internet signal was also weak, so I could not really watch videos or study.\n\nI think it was boring because time passed very slowly. However, it also became a small memory from the trip. After we finally got on the bus, everyone felt much happier.",
+    "fullChinese": "我去过的一个无聊地方，是去甘肃植树区域路上的一个偏远汽车站等候室。\n\n我是和璐璐以及几个志愿者一起去的。因为下一班车晚点了，我们不得不在那里等。一开始我以为只等一会儿，结果我们差不多等了两个小时。\n\n那里几乎没什么可做的。房间里只有几把椅子、一个小商店和一台旧电视，但电视声音很小。网络信号也很弱，所以我不能真正看视频或学习。\n\n我觉得它无聊，是因为时间过得特别慢。不过，它也变成了旅行中的一个小记忆。最后上车以后，大家都开心了很多。"
+  },
+  {
+    "id": 26,
+    "topicCn": "早起经历",
+    "title": "Describe a time when you got up early",
+    "cuePoints": [
+      "When it was",
+      "What you did",
+      "Why you got up early",
+      "And how you felt about it"
+    ],
+    "story": "故事1",
+    "storyConversion": "During the Gansu volunteer trip, I got up at around six to plant trees before it became too hot and windy.",
+    "cnConversion": "甘肃植树时早上六点起床，趁天气还好去种树。",
+    "keywords": "get up early\nmorning work\nsunrise",
+    "fullEnglish": "A time when I got up early was during my tree-planting trip in Gansu.\n\nIt happened on the first working day of the activity. We had to get up at around six in the morning because the weather would become hot and windy later in the day. The organiser told us that morning was the best time to work.\n\nAfter getting up, I washed quickly, had a simple breakfast, and went to the planting area with Lulu and the other volunteers. I was sleepy at first because I am not usually an early person. But when I saw the wide open land and the sunrise, I felt a little excited.\n\nI felt tired later, but I was glad I got up early. It made the whole activity feel more serious and meaningful.",
+    "fullChinese": "我早起的一次经历，是在甘肃植树旅行期间。\n\n这件事发生在活动的第一个工作日。我们需要早上六点左右起床，因为白天晚些时候天气会变热，风也会变大。组织者告诉我们，早上是最适合工作的时间。\n\n起床后，我快速洗漱，吃了简单的早饭，然后和璐璐以及其他志愿者一起去了植树区域。一开始我很困，因为我平时不是很擅长早起。但看到开阔的土地和日出时，我有点兴奋。\n\n后来我很累，但我很庆幸自己早起了。它让整个活动感觉更认真，也更有意义。"
+  },
+  {
+    "id": 27,
+    "topicCn": "有趣视频",
+    "title": "Describe an interesting video",
+    "cuePoints": [
+      "When and where you watched it",
+      "What it is about",
+      "Why you watched it",
+      "And explain how you feel about it"
+    ],
+    "story": "故事2",
+    "storyConversion": "I watched an online interview with Sam Altman about AI, learning, and responsibility.",
+    "cnConversion": "有趣视频：Sam Altman 关于 AI、学习和责任的线上访谈。",
+    "keywords": "online interview\nAI and learning\nfeel inspired",
+    "fullEnglish": "An interesting video I watched was an online interview with Sam Altman about AI.\n\nI first saw a short clip on a video app, and then I watched a longer part later. The video was about how AI may change learning and work. I watched it because I had already used ChatGPT for English and programming, so I wanted to know what the people behind the product thought about the future.\n\nI found the video interesting because he did not only talk about technology. He also talked about responsibility and how AI should help people. Some ideas were a little difficult, but the main message was easy to understand.\n\nI felt inspired after watching it. It made me think that AI is not just a cool tool. It can also change the way ordinary people learn and solve problems.",
+    "fullChinese": "我看过的一个有趣视频，是 Sam Altman 关于 AI 的线上访谈。\n\n我一开始是在视频软件上刷到一个短片段，后来又看了更长的一部分。视频内容是 AI 可能如何改变学习和工作。我看它是因为我已经在用 ChatGPT 学英语和解决编程问题，所以想知道这个产品背后的人怎么看未来。\n\n我觉得这个视频有趣，是因为他不只是谈技术。他也谈到了责任，以及 AI 应该如何帮助人们。有些观点有点难，但主要意思很好理解。\n\n看完后我觉得很受启发。它让我觉得 AI 不只是一个很酷的工具，也可能改变普通人学习和解决问题的方式。"
+  },
+  {
+    "id": 28,
+    "topicCn": "喜欢或不喜欢的高建筑",
+    "title": "Describe a tall building you like or dislike",
+    "cuePoints": [
+      "What it is used for",
+      "Where it is",
+      "What it looks like",
+      "And explain why you like/dislike it"
+    ],
+    "story": "特殊",
+    "storyConversion": "I would talk about the Oriental Pearl Tower in Shanghai because it is a tall landmark with a special design.",
+    "cnConversion": "高建筑：上海东方明珠，靠近黄浦江，外形特别，能俯瞰城市。",
+    "keywords": "Oriental Pearl Tower\nHuangpu River\nmodern landmark",
+    "fullEnglish": "A tall building I like is the Oriental Pearl Tower in Shanghai. It is near the Huangpu River and is one of the most famous landmarks in the city.\n\nThe building is mainly used for sightseeing, broadcasting, and tourism. It has several big round parts, so it looks very different from normal office buildings. From a distance, it is easy to recognise.\n\nI like it because the design is special and a little futuristic. When I visited it, I went up to the observation area and looked over the city. I could see the river, many tall buildings, and busy roads below.\n\nI know some people may think it looks too unusual, but I personally like it. It feels like a symbol of Shanghai: modern, busy, and full of energy.",
+    "fullChinese": "我喜欢的一栋高建筑是上海的东方明珠。它在黄浦江附近，是上海最有名的地标之一。\n\n这栋建筑主要用于观光、广播和旅游。它有几个很大的圆形结构，所以看起来和普通办公楼很不一样。远远看过去，很容易认出来。\n\n我喜欢它，是因为它的设计很特别，也有一点未来感。我去参观的时候，上到了观景区域，可以俯瞰城市。我看到了黄浦江、很多高楼和下面繁忙的道路。\n\n我知道有些人可能觉得它外形太特别，但我个人很喜欢。它像是上海的一个象征：现代、忙碌，而且很有活力。"
+  },
+  {
+    "id": 29,
+    "topicCn": "去过且喜欢的城市",
+    "title": "Describe a city you enjoyed visiting",
+    "cuePoints": [
+      "Where it is",
+      "When you visited it",
+      "How long you stayed there",
+      "What you did there",
+      "And explain why you enjoyed visiting it"
+    ],
+    "story": "故事1",
+    "storyConversion": "I enjoyed visiting Lanzhou because of the Yellow River, local food, and relaxed feeling.",
+    "cnConversion": "喜欢的城市：兰州，有黄河、牛肉面和较慢的生活节奏。",
+    "keywords": "Lanzhou\nYellow River\nbeef noodles\nslower daily life",
+    "fullEnglish": "A city I enjoyed visiting is Lanzhou, the capital city of Gansu Province.\n\nI visited it during my trip to Gansu. I did not stay for a very long time, only a few days, but I had a good impression of the city. What I liked most was the area near the Yellow River. I walked along the river, took some photos, and tried Lanzhou beef noodles.\n\nThe city felt different from the cities I usually visit. It was not as fast as Beijing or Shanghai, but it had its own character. The Yellow River made the city feel open and lively.\n\nI enjoyed visiting Lanzhou because it was comfortable and real. It was not only about famous tourist spots. I liked the river, the food, and the slower feeling of daily life there.",
+    "fullChinese": "我喜欢去过的一个城市是兰州，它是甘肃省的省会。\n\n我是去甘肃旅行时去的兰州。停留时间不算很长，大概只有几天，但我对这个城市印象很好。我最喜欢的是黄河边的区域。我沿着河边散步、拍照，还吃了兰州牛肉面。\n\n这个城市和我平时去的城市感觉不太一样。它不像北京或上海那么快节奏，但有自己的特点。黄河让这个城市显得开阔，也很有生活气息。\n\n我喜欢兰州，是因为它舒服、真实。它不只是有著名景点。我喜欢那里的河、食物，还有比较慢的日常生活节奏。"
+  },
+  {
+    "id": 30,
+    "topicCn": "爱护自然的人",
+    "title": "Describe a person who likes to look after the natural world",
+    "cuePoints": [
+      "Who this person is",
+      "What he or she does",
+      "How he or she does it",
+      "How often he or she does it",
+      "And explain how you feel about this person"
+    ],
+    "story": "故事1",
+    "storyConversion": "My childhood friend Lulu looks after nature through small daily habits and the Gansu tree-planting activity.",
+    "cnConversion": "爱护自然的人：璐璐，通过日常小习惯和植树活动保护自然。",
+    "keywords": "Lulu\nsmall green habits\nmake a difference",
+    "fullEnglish": "A person who likes to look after the natural world is my childhood friend Lulu.\n\nShe does small things in daily life. For example, she grows plants on her balcony, uses her own shopping bag, and tries not to waste food. She is not a professional environmental worker, but she is quite serious about these habits.\n\nShe looks after nature by doing simple actions regularly. When we joined the tree-planting activity in Gansu, she was also very careful. She listened to the local worker, planted the young trees properly, and reminded me not to leave any rubbish behind.\n\nShe does these things quite often, not just once or twice.\n\nI feel that she is a good example for me. She shows that protecting nature does not always need big actions. Small habits can also make a difference if people keep doing them.",
+    "fullChinese": "一个爱护自然的人是我的发小璐璐。\n\n她在日常生活中会做一些小事。比如，她在阳台上种植物，购物时使用自己的袋子，也尽量不浪费食物。她不是专业环保工作者，但对这些习惯很认真。\n\n她通过定期做简单的行动来爱护自然。我们参加甘肃植树活动时，她也很细心。她认真听当地工作人员的指导，正确地种下小树苗，还提醒我不要留下垃圾。\n\n这些事情她经常做，不只是偶尔做一两次。\n\n我觉得她是一个很好的榜样。她让我看到，保护自然不一定需要很大的行动。只要坚持，小习惯也能产生影响。"
+  },
+  {
+    "id": 31,
+    "topicCn": "想从事的短期海外工作",
+    "title": "Describe a short-term job you want to have in a foreign country",
+    "cuePoints": [
+      "Where it is",
+      "How you know of it",
+      "What the job is",
+      "And explain why you want to do it"
+    ],
+    "story": "故事2",
+    "storyConversion": "I would like to work as an assistant at an AI education workshop in a foreign country.",
+    "cnConversion": "短期海外工作：AI 教育工作坊助理，帮助学生使用 AI 学习。",
+    "keywords": "AI education workshop\nshort-term job\nresponsible use",
+    "fullEnglish": "A short-term job I would like to have in a foreign country is an assistant job at an AI education workshop.\n\nThe country could be the UK or Singapore, because both have many international students and technology events. I knew about this kind of job from online videos and websites about AI learning.\n\nThe job would be to help students use tools like ChatGPT in a responsible way. For example, I could help them practise English, organise simple activities, or show them how to ask clear questions. It would not be a very high-level research job, but it would be practical.\n\nI want to do it because it connects with my interests. I am a game developer, I use AI often, and I am learning English. This short-term job would let me practise communication and learn how people from other countries use AI.",
+    "fullChinese": "我想在国外做的一份短期工作，是在一个 AI 教育工作坊当助理。\n\n地点可以是英国或新加坡，因为这两个地方都有很多国际学生和科技活动。我是通过一些关于 AI 学习的在线视频和网站知道这种工作的。\n\n这份工作主要是帮助学生负责任地使用像 ChatGPT 这样的工具。比如，我可以帮他们练英语、组织简单活动，或者教他们怎样提出清楚的问题。它不是很高级的研究工作，但很实用。\n\n我想做这份工作，是因为它和我的兴趣有关。我是游戏开发者，经常使用 AI，也在学习英语。这份短期工作能让我练习沟通，也能了解其他国家的人如何使用 AI。"
+  },
+  {
+    "id": 32,
+    "topicCn": "喜欢的电视/网络节目",
+    "title": "Describe a TV/online program you enjoy watching",
+    "cuePoints": [
+      "What it is",
+      "What it is about",
+      "Which country it is from",
+      "When you watch it",
+      "And explain why you like to watch it"
+    ],
+    "story": "故事2",
+    "storyConversion": "I enjoy watching online AI interview programs because they connect with my English learning and coding work.",
+    "cnConversion": "喜欢的网络节目：AI 科技访谈，和英语学习、编程工作有关。",
+    "keywords": "AI interviews\ntechnology leaders\nuseful expressions",
+    "fullEnglish": "An online program I enjoy watching is a series of interviews about AI and technology.\n\nIt is mainly from the United States, and I usually watch short clips on video platforms in the evening. The program is about how AI is changing learning, work, and daily life. Sometimes it includes people like Sam Altman or other technology leaders.\n\nI like watching it because the topics are connected to my own life. I use ChatGPT for English practice and coding, so I want to understand more about the development of AI. The program also gives me useful English expressions related to technology.\n\nI do not watch every episode from beginning to end. Sometimes I only watch short parts. But I still enjoy it because it helps me learn and gives me new ideas.",
+    "fullChinese": "我喜欢看的一个网络节目，是一系列关于 AI 和科技的访谈。\n\n它主要来自美国，我通常晚上在视频平台上看短片段。这个节目讲的是 AI 如何改变学习、工作和日常生活。有时候里面会出现 Sam Altman 或其他科技行业的人。\n\n我喜欢看它，是因为这些话题和我的生活有关。我会用 ChatGPT 练英语和写代码，所以想更多了解 AI 的发展。这个节目也给了我一些和科技有关的英语表达。\n\n我不是每一集都从头看到尾。有时候我只看短片段。但我仍然喜欢它，因为它能帮助我学习，也能给我新想法。"
+  },
+  {
+    "id": 33,
+    "topicCn": "鼓励别人做不愿做的事",
+    "title": "Describe a time when you encouraged someone to do something that he/she didn't want to do",
+    "cuePoints": [
+      "Who he or she is",
+      "What you encouraged him/her to do",
+      "How he/she reacted",
+      "And explain why you encouraged him/her to do it"
+    ],
+    "story": "故事2",
+    "storyConversion": "I encouraged a friend to use ChatGPT for English speaking practice when she was afraid to speak.",
+    "cnConversion": "鼓励朋友用 ChatGPT 练口语，因为她害怕开口。",
+    "keywords": "encourage a friend\nfirst step\nless scary",
+    "fullEnglish": "A time when I encouraged someone to do something she did not want to do was when I encouraged a friend to try ChatGPT for English speaking practice.\n\nShe was preparing for an English test, but she was afraid of speaking. She worried that her pronunciation was bad and that she would make many mistakes. At first, she did not want to use ChatGPT because she thought AI tools were complicated.\n\nI showed her a very simple way. I told her to ask ChatGPT to act as an IELTS examiner and ask one question at a time. Then she could answer in short sentences and ask for simple corrections.\n\nAt first, she was still nervous, but after trying it for ten minutes, she said it was less scary than speaking to a real person. I encouraged her because I knew the first step was the hardest.",
+    "fullChinese": "我鼓励别人做一件她不想做的事，是我劝一个朋友尝试用 ChatGPT 练英语口语。\n\n她当时在准备英语考试，但很害怕开口。她担心自己的发音不好，也担心犯很多错误。一开始她不想用 ChatGPT，因为她觉得 AI 工具很复杂。\n\n我给她展示了一个很简单的方法。我告诉她，可以让 ChatGPT 扮演雅思考官，一次问一个问题。然后她用短句回答，再让它做简单修改。\n\n一开始她还是紧张，但试了十分钟后，她说这比和真人说话没那么可怕。我鼓励她，是因为我知道第一步最难。"
+  },
+  {
+    "id": 34,
+    "topicCn": "乐于助人的人",
+    "title": "Describe a person who often helps others",
+    "cuePoints": [
+      "Who this person is",
+      "How often he/she helps others",
+      "How/why he/she helps others",
+      "And how you feel about this person"
+    ],
+    "story": "故事1",
+    "storyConversion": "Lulu is helpful because she gives practical support, like helping me prepare for the Gansu trip.",
+    "cnConversion": "乐于助人的人：璐璐，给实际帮助，帮我准备甘肃行程。",
+    "keywords": "helpful and organised\npractical help\nfeel confident",
+    "fullEnglish": "A helpful person I know is my childhood friend Lulu.\n\nShe often helps people around her, especially when they feel nervous or do not know where to start. She does not only say comforting words; she usually gives practical help.\n\nFor example, before my Gansu tree-planting trip, I was confused about the sign-up process and what to bring. Lulu helped me check the information, contact the organiser, and make a packing list. She also reminded me to prepare comfortable shoes and sunscreen.\n\nI think she helps others because she is patient and organised. She likes making things clear.\n\nI feel very lucky to have her as a friend. Her help made the trip much easier for me, and it also made me feel more confident about trying something new.",
+    "fullChinese": "我认识的一个乐于助人的人是我的发小璐璐。\n\n她经常帮助身边的人，尤其是在别人紧张或者不知道从哪里开始的时候。她不只是说安慰的话，通常会给出很实际的帮助。\n\n比如，在我去甘肃植树之前，我对报名流程和要带什么都很困惑。璐璐帮我查信息、联系组织者，还做了一个行李清单。她也提醒我准备舒服的鞋和防晒。\n\n我觉得她帮助别人，是因为她很有耐心，也很有条理。她喜欢把事情弄清楚。\n\n我很幸运能有她这样的朋友。她的帮助让这次旅行对我来说容易了很多，也让我更有信心尝试新事物。"
+  },
+  {
+    "id": 35,
+    "topicCn": "花费超过预期的物品",
+    "title": "Describe an item on which you spent more than expected",
+    "cuePoints": [
+      "What it is",
+      "How much you spent on it",
+      "Why you bought it",
+      "And explain why you think you spent more than expected"
+    ],
+    "story": "故事2",
+    "storyConversion": "I spent more than expected on a tablet and keyboard for IELTS practice and work notes.",
+    "cnConversion": "超预算物品：平板和小键盘，用于雅思学习和工作记录。",
+    "keywords": "tablet and keyboard\ncost more than expected\nworth it",
+    "fullEnglish": "Something I spent more than expected on was a tablet with a small keyboard.\n\nAt first, I only wanted to buy a cheap device for reading notes and watching lessons. I planned to spend a limited amount of money. But after comparing different models, I chose a better one because the screen was clearer and the keyboard felt more comfortable.\n\nI bought it mainly for English learning and work. I wanted to use it to read IELTS materials, practise speaking with ChatGPT, and take notes when I studied programming.\n\nIt cost more than I expected, but I think it was still worth it. I use it much more often than I thought. It is lighter than a laptop and more comfortable than a phone for long reading.\n\nSo although I spent extra money, I do not really regret it.",
+    "fullChinese": "一个花费超过我预期的东西，是一台平板和小键盘。\n\n一开始，我只想买一个便宜设备，用来看笔记和课程。我原本计划花比较少的钱。但比较了不同型号后，我选了一个更好的，因为屏幕更清楚，键盘也更舒服。\n\n我买它主要是为了英语学习和工作。我想用它看雅思资料、用 ChatGPT 练口语，也在学习编程时记笔记。\n\n它比我预期花得多，但我觉得仍然值得。我使用它的频率比想象中高。它比笔记本轻，也比手机更适合长时间阅读。\n\n所以虽然多花了钱，我并不后悔。"
+  },
+  {
+    "id": 36,
+    "topicCn": "发挥想象力",
+    "title": "Describe a time you needed to use your imagination",
+    "cuePoints": [
+      "When it was",
+      "Why you needed to use imagination",
+      "How difficult or easy it was",
+      "And explain how you felt about it"
+    ],
+    "story": "故事2",
+    "storyConversion": "I used my imagination with ChatGPT to brainstorm ideas for a small mobile game.",
+    "cnConversion": "发挥想象力：用 ChatGPT 帮助构思小游戏创意，并筛选可实现的想法。",
+    "keywords": "use imagination\nbrainstorm ideas\nmake it practical",
+    "fullEnglish": "A time when I needed to use my imagination was when I was thinking of ideas for a small mobile game.\n\nIt happened during my free time. I had a basic idea, but it felt too normal and not fun enough. So I used ChatGPT as a brainstorming partner. I asked it to give me different character ideas, simple rules, and possible themes.\n\nUsing imagination was not too difficult at the beginning, but it became harder when I tried to make the idea practical. Some ideas sounded fun, but they were too hard to make. I had to choose the parts that were simple enough for a small project.\n\nI felt excited because the process made me more creative. It also reminded me that imagination is not only about wild ideas. It is also about changing ideas into something that can really work.",
+    "fullChinese": "我需要发挥想象力的一次经历，是我在构思一个手机小游戏的时候。\n\n这件事发生在我的空闲时间。我有一个基础想法，但感觉太普通，不够有趣。所以我把 ChatGPT 当作头脑风暴伙伴。我让它给我不同的角色想法、简单规则和可能的主题。\n\n一开始发挥想象力并不难，但当我想让创意变得可实现时，就变难了。有些想法听起来好玩，但制作起来太复杂。我必须选择那些适合小项目的简单部分。\n\n我感到很兴奋，因为这个过程让我更有创造力。它也提醒我，想象力不只是天马行空的想法，也包括把想法变成真正能做出来的东西。"
+  },
+  {
+    "id": 37,
+    "topicCn": "有趣的建筑",
+    "title": "Describe an interesting building",
+    "cuePoints": [
+      "Where it is",
+      "What it looks like",
+      "What function it has",
+      "And explain why you think it is interesting"
+    ],
+    "story": "特殊",
+    "storyConversion": "I would talk about the Oriental Pearl Tower because it has a special shape and several functions.",
+    "cnConversion": "有趣建筑：东方明珠，形状特别，功能包括观光、广播和旅游。",
+    "keywords": "special shape\nclear personality\nsymbol of Shanghai",
+    "fullEnglish": "An interesting building I have visited is the Oriental Pearl Tower in Shanghai.\n\nIt is located near the Huangpu River. It looks very special because it has several round parts, almost like big balls connected by columns. This shape makes it different from most modern buildings.\n\nThe building has several functions. It is used for sightseeing, broadcasting, and tourism. People can go up to the observation area and look over Shanghai. There are also shops and restaurants inside.\n\nI think it is interesting because it is not just tall; it has a very clear personality. When people see its shape, they can immediately think of Shanghai.\n\nI enjoyed visiting it because it gave me a strong feeling of the city. It was modern, busy, and a little futuristic.",
+    "fullChinese": "我去过的一栋有趣建筑是上海的东方明珠。\n\n它位于黄浦江附近。它的外形非常特别，因为它有几个圆形结构，看起来像几个大球被柱子连接起来。这个形状让它和大多数现代建筑不同。\n\n这栋建筑有几个功能。它用于观光、广播和旅游。人们可以上到观景区域俯瞰上海。里面也有商店和餐厅。\n\n我觉得它有趣，是因为它不只是高，而是很有自己的特点。人们一看到它的形状，就会立刻想到上海。\n\n我很喜欢参观它，因为它让我强烈感受到这座城市。它现代、繁忙，还有一点未来感。"
+  },
+  {
+    "id": 38,
+    "topicCn": "朋友自学",
+    "title": "Describe one of your friends who learned something without a teacher",
+    "cuePoints": [
+      "Who he/she is",
+      "What he/she learned",
+      "Why he/she learned this",
+      "And explain whether it would be easier to learn from a teacher"
+    ],
+    "story": "故事2",
+    "storyConversion": "A friend taught herself how to use ChatGPT for English learning because she needed a flexible way to practise.",
+    "cnConversion": "朋友自学：通过教程和尝试，学会用 ChatGPT 练英语。",
+    "keywords": "teach herself\nAI tools\nflexible learning",
+    "fullEnglish": "One of my friends taught herself how to use AI tools for English learning.\n\nShe is a friend I met online through an English study group. At first, she only knew that ChatGPT could answer questions, but she did not know how to use it well. Later, she watched tutorials, tried different prompts, and slowly built her own study method.\n\nShe learned it because she wanted to practise speaking and writing by herself. She did not have enough time to take many classes, so an AI tool was more flexible for her.\n\nI think learning from a teacher might be easier at the beginning, because a teacher can give a clear plan. But self-learning is also useful if a person is patient. I respect her because she did not wait for perfect conditions. She just started and kept improving.",
+    "fullChinese": "我的一个朋友自学了如何使用 AI 工具学习英语。\n\n她是我在一个英语学习群里认识的朋友。一开始，她只知道 ChatGPT 可以回答问题，但不知道怎么用好它。后来，她看教程、尝试不同提示词，慢慢建立了自己的学习方法。\n\n她学习这个，是因为她想自己练口语和写作。她没有足够时间上很多课，所以 AI 工具对她来说更灵活。\n\n我觉得刚开始跟老师学可能会更容易，因为老师能给出清晰计划。但如果一个人有耐心，自学也很有用。我尊重她，因为她没有等待完美条件，而是直接开始并不断改进。"
+  },
+  {
+    "id": 39,
+    "topicCn": "近期观影",
+    "title": "Describe a movie you watched and enjoyed recently",
+    "cuePoints": [
+      "When and where you watched it",
+      "Who you watched it with",
+      "What it was about",
+      "And explain why you watched this movie"
+    ],
+    "story": "特殊",
+    "storyConversion": "I watched The Devil Wears Prada at home and enjoyed its story about career pressure and growth.",
+    "cnConversion": "近期观影：重看《穿普拉达的女王》，重点是职场压力和成长。",
+    "keywords": "The Devil Wears Prada\nworkplace pressure\npersonal growth",
+    "fullEnglish": "A movie I watched and enjoyed recently was The Devil Wears Prada. I watched it at home on my laptop after seeing some short clips online.\n\nI watched it by myself. The movie is about a young woman who starts working for a famous fashion magazine. At first, she is not used to the job because her boss is very strict and the work environment is stressful. But slowly, she learns how to deal with pressure and understand the industry.\n\nI watched it because many people still talk about this movie, and I was also interested in workplace stories. I enjoyed it because it is not only about fashion. It also shows career pressure, personal choices, and growth.\n\nI liked the main character because she tries hard, but she also learns that success should not make her lose herself.",
+    "fullChinese": "我最近看过并且喜欢的一部电影是《穿普拉达的女王》。我是看到网上的一些短片段后，在家用笔记本看的。\n\n我是自己看的。这部电影讲的是一个年轻女孩开始在一家著名时尚杂志工作。一开始，她不适应这份工作，因为她的老板很严格，工作环境也很有压力。但慢慢地，她学会了应对压力，也了解了这个行业。\n\n我看这部电影，是因为很多人到现在还会讨论它，而且我也对职场故事感兴趣。我喜欢它，因为它不只是关于时尚，也展示了职场压力、个人选择和成长。\n\n我喜欢女主角，因为她很努力，但她也学会了成功不应该让自己失去自我。"
+  },
+  {
+    "id": 40,
+    "topicCn": "不享受的音乐活动",
+    "title": "Describe an event you attended in which you didn't enjoy the music played",
+    "cuePoints": [
+      "What it was",
+      "Who you went with",
+      "Why you decided to go there",
+      "And explain why you didn't enjoy it"
+    ],
+    "story": "故事1",
+    "storyConversion": "I went to a small outdoor music event in Gansu, but the music was too loud after a tiring day.",
+    "cnConversion": "不享受的音乐活动：甘肃户外音乐活动，音乐太大声。",
+    "keywords": "outdoor music event\ntoo loud\nprefer soft music",
+    "fullEnglish": "An event where I did not enjoy the music was a small outdoor music event during my trip to Gansu.\n\nI went there with Lulu and some other volunteers after the tree-planting work. We decided to go because we wanted to relax and see what local evening activities were like.\n\nAt first, I thought it would be pleasant. But the music was much louder than I expected. The speakers were close to the audience, and the songs were mostly very energetic. After a long day outside, I was already tired, so the loud music made me feel uncomfortable.\n\nI did not hate the event itself. Some people were enjoying it and dancing. But for me, it was not the right time or the right style of music. I would have preferred something softer and quieter.",
+    "fullChinese": "我参加过但不喜欢音乐的一次活动，是去甘肃时参加的一个小型户外音乐活动。\n\n我和璐璐以及几个志愿者一起去的，时间是在植树工作结束后。我们决定去，是因为想放松一下，也想看看当地晚上的活动。\n\n一开始我以为会很舒服。但音乐比我想象中大声很多。音响离观众很近，歌曲也大多很有活力。户外工作了一整天后，我已经很累，所以大声的音乐让我觉得不舒服。\n\n我并不讨厌这个活动本身。有些人很享受，还在跳舞。但对我来说，那不是合适的时间，也不是我喜欢的音乐风格。我更想听一些柔和安静的音乐。"
+  },
+  {
+    "id": 41,
+    "topicCn": "机智解决问题的人",
+    "title": "Describe a person who solved a problem in a smart way",
+    "cuePoints": [
+      "Who this person is",
+      "What the problem was",
+      "How he/she solved it",
+      "And explain why you think he/she did it in a smart way"
+    ],
+    "story": "故事2",
+    "storyConversion": "My colleague solved a UI bug smartly by adding simple logs and testing step by step.",
+    "cnConversion": "机智解决问题：同事通过日志和逐步测试解决 UI bug。",
+    "keywords": "smart solution\nsimple logs\nfind the real reason",
+    "fullEnglish": "A person who solved a problem in a smart way is my colleague. He once helped our team solve a difficult bug in a game project.\n\nThe problem was that a UI panel sometimes opened twice, but not every time. This made it hard to find the reason. Some people thought it was a UI animation problem, but my colleague did not guess randomly.\n\nHe solved it in a smart way. First, he added simple logs to each possible place. Then he tested the steps slowly and compared the results. Finally, he found that two different buttons were calling the same function at almost the same time.\n\nI think it was smart because he did not make the problem bigger. He used a clear and simple method to find the real reason. I learned from him that smart problem-solving is often about being calm and organised.",
+    "fullChinese": "一个机智解决问题的人是我的同事。他曾经帮我们团队解决了一个游戏项目里的难 bug。\n\n问题是一个 UI 面板有时候会打开两次，但不是每次都会发生。这让原因很难找。有些人以为是 UI 动画问题，但我的同事没有乱猜。\n\n他用很聪明的方法解决了问题。首先，他在每个可能的位置加了简单日志。然后他慢慢测试步骤，并比较结果。最后，他发现有两个不同按钮几乎同时调用了同一个函数。\n\n我觉得这个方法很聪明，因为他没有把问题搞复杂，而是用清晰简单的方法找到真正原因。我从他身上学到，聪明地解决问题往往就是冷静和有条理。"
+  },
+  {
+    "id": 42,
+    "topicCn": "对家庭重要的东西",
+    "title": "Describe something important that has been kept in your family for a long time",
+    "cuePoints": [
+      "What it is",
+      "When your family had it",
+      "How your family got it",
+      "And explain why it is important f or your family"
+    ],
+    "story": "特殊",
+    "storyConversion": "I would talk about an old family photo album that keeps many memories from my childhood.",
+    "cnConversion": "家庭重要物品：旧相册，保存童年和家人的回忆。",
+    "keywords": "old photo album\nfamily memories\nwarm and real",
+    "fullEnglish": "Something important that has been kept in my family for a long time is an old photo album.\n\nMy family has had it since I was a child. My parents put many printed photos in it, including pictures of my grandparents, my childhood, family meals, and small trips. I think my family got most of these photos from old cameras before phones became popular.\n\nIt is important because it keeps many memories that are not saved on the internet. When we open the album, we can remember people, places, and moments from many years ago. Some photos are not very clear, but they feel warm and real.\n\nI like this album because it reminds me that family memories are valuable. Digital photos are convenient, but a physical album feels more personal and emotional.",
+    "fullChinese": "我家保存了很久的一样重要东西，是一本旧相册。\n\n我家从我小时候就有它了。我的父母把很多打印出来的照片放在里面，包括爷爷奶奶的照片、我小时候的照片、家庭聚餐和一些小旅行。我想这些照片大多是手机普及前用旧相机拍的。\n\n它很重要，因为它保存了很多没有存在网上的记忆。我们翻开相册时，会想起很多年前的人、地方和时刻。有些照片并不清楚，但感觉很温暖、很真实。\n\n我喜欢这本相册，因为它提醒我家庭记忆很珍贵。电子照片很方便，但实体相册更有个人感情。"
+  },
+  {
+    "id": 43,
+    "topicCn": "购物场所",
+    "title": "Describe a place where you enjoy shopping",
+    "cuePoints": [
+      "What its name is",
+      "Where it is",
+      "How often you visit it",
+      "And what you usually buy at the mall"
+    ],
+    "story": "故事1",
+    "storyConversion": "I enjoy shopping at a large mall near my home because it is convenient and has many useful shops.",
+    "cnConversion": "购物场所：家附近的大型商场，方便、干净、能买日用品和旅行装备。",
+    "keywords": "shopping mall\nconvenient and clean\ncompare products",
+    "fullEnglish": "A place where I enjoy shopping is a large shopping mall near my home.\n\nI do not go there every day, but I visit it maybe once or twice a month. It is easy to get there, and it has many different shops, so I can buy several things in one place.\n\nI usually buy daily products, small electronic accessories, and sometimes clothes. Before my Gansu trip, I also went there to buy sunscreen, a water bottle, and comfortable socks. I liked that I could compare different products before buying them.\n\nI enjoy shopping there because it is convenient and clean. There are also restaurants and coffee shops, so it is not only a place for buying things. Sometimes I just walk around there to relax, especially when the weather outside is bad.",
+    "fullChinese": "我喜欢购物的一个地方，是我家附近的一个大型商场。\n\n我不是每天都去，但大概一个月会去一两次。那里交通方便，而且有很多不同商店，所以我可以在一个地方买到好几种东西。\n\n我通常买日用品、小电子配件，有时候也买衣服。去甘肃之前，我也去那里买了防晒、水瓶和舒服的袜子。我喜欢能在买之前比较不同产品。\n\n我喜欢在那里购物，是因为它方便又干净。里面也有餐厅和咖啡店，所以它不只是买东西的地方。有时候天气不好，我也会去那里走一走放松。"
+  },
+  {
+    "id": 44,
+    "topicCn": "自行车/摩托车/汽车旅行",
+    "title": "Describe a bicycle/motorcycle/car trip you would like to take",
+    "cuePoints": [
+      "Where you would like to go",
+      "Who you would like to go with",
+      "What you would do during the trip",
+      "And explain why you would like to take this trip"
+    ],
+    "story": "故事1",
+    "storyConversion": "I would like to take a car trip along the Yellow River in Lanzhou with Lulu.",
+    "cnConversion": "汽车旅行：和璐璐沿兰州黄河边自驾，拍照、吃牛肉面。",
+    "keywords": "road trip\nYellow River\nLanzhou beef noodles\nLulu",
+    "fullEnglish": "A car trip I would like to take is a short road trip along the Yellow River in Lanzhou, Gansu.\n\nI would like to go with Lulu because she is good at planning and we both like relaxing trips. During the trip, we would drive slowly along the river, stop at some viewpoints, take photos, and try Lanzhou beef noodles. If we had more time, we might also visit nearby towns.\n\nI want to take this trip because I enjoyed Lanzhou when I visited it before. The Yellow River area made the city feel open and lively. A car trip would give us more freedom than taking a bus or train.\n\nI think it would be a comfortable trip. It is not too adventurous, but it would let me enjoy the river, local food, and time with a good friend.",
+    "fullChinese": "我想进行的一次汽车旅行，是沿着甘肃兰州的黄河附近来一次短途自驾。\n\n我想和璐璐一起去，因为她很会做计划，而且我们都喜欢比较放松的旅行。旅行中，我们可以沿着河慢慢开，在一些观景点停下来拍照，也可以吃兰州牛肉面。如果时间更多，还可以去附近的小城镇看看。\n\n我想进行这次旅行，是因为我以前去兰州时很喜欢那里。黄河附近让整个城市显得开阔又有生活气息。自驾比坐公交或火车更自由。\n\n我觉得这会是一次舒服的旅行。它不算很冒险，但可以让我享受河边风景、当地美食和与好朋友相处的时间。"
+  },
+  {
+    "id": 45,
+    "topicCn": "想拥有的科技产品",
+    "title": "Describe a piece of technology (not a phone) that you would like to own",
+    "cuePoints": [
+      "What it is",
+      "How much it costs",
+      "How you knew it",
+      "And explain why you would like to own it"
+    ],
+    "story": "故事2",
+    "storyConversion": "I would like to own a light tablet for IELTS practice, reading, notes, and ChatGPT.",
+    "cnConversion": "想拥有的科技产品：学习平板，用于雅思练习、阅读、笔记和 ChatGPT。",
+    "keywords": "learning tablet\ngood screen\nstudy tool",
+    "fullEnglish": "A piece of technology I would like to own is a light tablet mainly for learning.\n\nIt would not be a phone. It would be a tablet with a good screen, a small keyboard, and maybe a stylus. I think it might cost several thousand yuan, depending on the model.\n\nI knew about this kind of device from online reviews and from friends who use tablets for study. I would like to own it because I could use it for IELTS speaking practice, reading, and taking notes. I could also use ChatGPT on it to check my answers and organise ideas.\n\nI want it because it is more comfortable than a phone and easier to carry than a laptop. For me, it would be a useful study tool, not just something for entertainment.",
+    "fullChinese": "我想拥有的一件科技产品，是一台主要用于学习的轻便平板。\n\n它不是手机，而是一台带好屏幕、小键盘，可能还有手写笔的平板。根据型号不同，我觉得可能要几千块钱。\n\n我是通过网上测评和一些用平板学习的朋友知道这种设备的。我想拥有它，是因为我可以用它练雅思口语、阅读和记笔记。我也可以在上面使用 ChatGPT 来检查答案和整理想法。\n\n我想要它，是因为它比手机更舒服，又比笔记本电脑更容易携带。对我来说，它会是一个有用的学习工具，而不只是娱乐设备。"
+  },
+  {
+    "id": 46,
+    "topicCn": "Apps/程序",
+    "title": "Describe a program or app on your computer or phone",
+    "cuePoints": [
+      "What it is",
+      "When/how you use it",
+      "Where you found it",
+      "And explain how you feel about it"
+    ],
+    "story": "故事2",
+    "storyConversion": "The app I would talk about is ChatGPT, because I use it for English learning and programming.",
+    "cnConversion": "App 题：ChatGPT，用于英语学习和编程辅助。",
+    "keywords": "ChatGPT app\nEnglish learning\ncoding help",
+    "fullEnglish": "An app I use a lot is ChatGPT. I started using it about two years ago.\n\nI use it on both my phone and computer. I mainly use it for English learning and programming. For English, I ask it to correct my sentences, explain grammar, and practise simple speaking questions with me. For work, I use it to help me understand Unity problems or organise my ideas before I write code.\n\nI found it online because many people were talking about it. At first, I was just curious, but later it became a real study and work tool for me.\n\nI feel positive about this app. Of course, I should not copy everything from it, but if I use it carefully, it can save time and help me learn more clearly.",
+    "fullChinese": "我经常使用的一个 App 是 ChatGPT。我大约两年前开始使用它。\n\n我会在手机和电脑上使用它。我主要用它学习英语和解决编程问题。英语方面，我会让它修改句子、解释语法，也会和它练习简单口语题。工作方面，我会用它帮助理解 Unity 问题，或者在写代码前整理思路。\n\n我是因为网上很多人都在讨论它才知道的。一开始我只是好奇，但后来它真的变成了我的学习和工作工具。\n\n我对这个 App 的感觉是积极的。当然，我不应该直接复制它的所有内容，但如果谨慎使用，它能节省时间，也能帮助我更清楚地学习。"
+  },
+  {
+    "id": 47,
+    "topicCn": "擅长做计划的人",
+    "title": "Describe a person who makes plans a lot and is good at planning",
+    "cuePoints": [
+      "Who he/she is",
+      "How you knew him/her",
+      "What plans he/she makes",
+      "And explain how you feel about this person"
+    ],
+    "story": "故事1",
+    "storyConversion": "I would talk about Lulu, because she planned our Gansu volunteer trip carefully.",
+    "cnConversion": "擅长计划的人：璐璐，帮我们安排甘肃植树行程。",
+    "keywords": "Lulu\ngood at planning\nclear checklist",
+    "fullEnglish": "A person I know who is good at planning is my childhood friend Lulu.\n\nI have known her since childhood. She has always been more organised than me. Before our Gansu tree-planting trip, she made a clear plan for almost everything.\n\nShe checked the activity schedule, the transport, the weather, and the packing list. She even wrote down what time we should leave home and what we should buy before the trip. Because of her plan, I felt much less nervous.\n\nShe makes plans not only for travel, but also for study and daily life. For example, she likes using simple lists to arrange her week.\n\nI feel that she is reliable. Sometimes I think she worries too much, but most of the time her planning really helps. I learned from her that a good plan can reduce many problems.",
+    "fullChinese": "我认识的一个擅长做计划的人，是我的发小璐璐。\n\n我从小就认识她。她一直比我更有条理。在我们去甘肃植树之前，她几乎把所有事情都计划好了。\n\n她查了活动时间、交通、天气和行李清单。她甚至写下我们应该几点出门，以及出发前要买什么。因为她的计划，我紧张少了很多。\n\n她不只为旅行做计划，也会为学习和日常生活做计划。比如，她喜欢用简单清单安排一周的事情。\n\n我觉得她很可靠。有时候我觉得她想得太多，但大多数时候，她的计划真的很有帮助。我从她身上学到，一个好计划可以减少很多问题。"
+  },
+  {
+    "id": 48,
+    "topicCn": "喜欢画画的孩子",
+    "title": "Describe a child who loves drawing/painting",
+    "cuePoints": [
+      "Who he/she is",
+      "How/when you knew him/her",
+      "How often he/she draws/paints",
+      "And explain why you think he/she loves drawing/painting"
+    ],
+    "story": "故事1",
+    "storyConversion": "During the Gansu tree-planting activity, I met a little girl who loved drawing nature posters.",
+    "cnConversion": "喜欢画画的孩子：甘肃植树活动中的小女孩，画环保海报。",
+    "keywords": "little girl\ndraw nature posters\ncreative child",
+    "fullEnglish": "A child I met who loves drawing was a little girl during the Gansu tree-planting activity.\n\nI knew her because she came with her parents, who were also volunteers. While the adults were planting trees, she spent a lot of time drawing on paper.\n\nShe drew small trees, birds, clouds, and people watering plants. She did not draw perfectly, but her pictures were colourful and lively. She told us that she wanted to make a poster to remind people to protect nature.\n\nI think she loves drawing because it is her way to express ideas. Some children like speaking a lot, but she seemed to prefer using pictures.\n\nI found her very cute and creative. Her drawings also made the serious volunteer activity feel warmer and more fun.",
+    "fullChinese": "我遇到过的一个喜欢画画的孩子，是甘肃植树活动中的一个小女孩。\n\n我认识她是因为她和做志愿者的父母一起来参加活动。大人们种树时，她花了很多时间在纸上画画。\n\n她画了小树、小鸟、云，还有给植物浇水的人。她画得不算完美，但画面很有颜色，也很有生命力。她告诉我们，她想做一张海报，提醒人们保护自然。\n\n我觉得她喜欢画画，是因为这是她表达想法的方式。有些孩子喜欢说很多话，但她似乎更喜欢用图画表达。\n\n我觉得她很可爱，也很有创造力。她的画也让严肃的志愿活动变得更温暖、更有趣。"
+  },
+  {
+    "id": 49,
+    "topicCn": "给别人建议",
+    "title": "Describe a time when you gave advice to others",
+    "cuePoints": [
+      "When it was",
+      "To whom you gave the advice",
+      "What the advice was",
+      "And explain why you gave the advice"
+    ],
+    "story": "故事2",
+    "storyConversion": "I advised a friend to use ChatGPT as a study assistant for English speaking practice.",
+    "cnConversion": "给别人建议：把 ChatGPT 当作学习助手，不要直接复制答案。",
+    "keywords": "study assistant\nnot copy answers\nsimple corrections",
+    "fullEnglish": "A piece of advice I gave someone was about using ChatGPT for English study.\n\nIt happened when a friend told me she did not know how to practise speaking by herself. She felt shy and was afraid of making mistakes.\n\nI advised her to use ChatGPT as a study assistant, not as a machine to copy answers from. I told her to ask simple questions, give short answers, and then ask for easy corrections. I also suggested that she keep her own ideas instead of using long and perfect sentences that do not sound like her.\n\nI gave this advice because I had used ChatGPT in this way myself. It helped me practise more often and feel less afraid.\n\nI think the advice was useful because it was simple and practical. She could start immediately without paying for a class.",
+    "fullChinese": "我给过别人的一个建议，是关于如何用 ChatGPT 学英语。\n\n这件事发生在一个朋友告诉我，她不知道怎么自己练口语的时候。她很害羞，也害怕犯错。\n\n我建议她把 ChatGPT 当作学习助手，而不是当成直接复制答案的机器。我告诉她可以让它问简单问题，自己用短句回答，然后要求它做简单修改。我还建议她保留自己的想法，不要用那种很长、很完美但不像自己的句子。\n\n我给这个建议，是因为我自己也这样使用过 ChatGPT。它帮助我更经常练习，也让我没那么害怕。\n\n我觉得这个建议有用，因为它简单实用。她不用上课，也可以马上开始。"
+  },
+  {
+    "id": 50,
+    "topicCn": "为家人骄傲",
+    "title": "Describe a time when you felt proud of a family member",
+    "cuePoints": [
+      "When it happened",
+      "Who the person is",
+      "What the person did",
+      "And explain why you felt proud of him/her"
+    ],
+    "story": "故事1",
+    "storyConversion": "I felt proud of my younger cousin because he joined a school volunteer activity and became more confident.",
+    "cnConversion": "为家人骄傲：小表弟参加学校志愿活动，变得更自信。",
+    "keywords": "family member\nvolunteer activity\nstep out of comfort zone",
+    "fullEnglish": "A time when I felt proud of a family member was when my younger cousin joined a school volunteer activity.\n\nIt happened last year. My cousin is usually a little shy, and he does not like speaking in front of people. But his school organised a community clean-up activity, and he volunteered to help. He picked up rubbish, sorted it into different bags, and helped younger students understand what to do.\n\nI felt proud because he stepped out of his comfort zone. It was not a huge achievement, but for him it was not easy. He could have stayed quiet and done nothing, but he chose to take part.\n\nThis also reminded me of my own Gansu tree-planting experience. Sometimes small volunteer work can help people grow. I was happy to see him become more confident.",
+    "fullChinese": "我为一位家人感到骄傲的一次，是我的一个小表弟参加学校志愿活动的时候。\n\n这件事发生在去年。我的小表弟平时有点害羞，不太喜欢在人前说话。但他的学校组织了一次社区清洁活动，他主动报名帮忙。他捡垃圾，把垃圾分到不同袋子里，还帮助更小的学生理解该怎么做。\n\n我感到骄傲，是因为他走出了舒适区。这不是一个巨大的成就，但对他来说并不容易。他本可以保持沉默什么都不做，但他选择了参与。\n\n这也让我想起自己参加甘肃植树的经历。有时候，小小的志愿活动也能帮助一个人成长。我很高兴看到他变得更自信。"
+  },
+  {
+    "id": 51,
+    "topicCn": "微笑的场合",
+    "title": "Describe an occasion when many people were smiling",
+    "cuePoints": [
+      "When it happened",
+      "Who you were with",
+      "What happened",
+      "And explain why most people were smiling"
+    ],
+    "story": "故事1",
+    "storyConversion": "On the last day of the Gansu activity, many volunteers smiled when we took a group photo.",
+    "cnConversion": "微笑的场合：甘肃植树最后一天，大家在树苗前合影。",
+    "keywords": "many people smiling\ngroup photo\nfeel proud",
+    "fullEnglish": "An occasion when many people were smiling was the last day of the tree-planting activity in Gansu.\n\nI was with Lulu, other volunteers, and a few local workers. After several days of work, we finally finished planting the young trees in our area. Everyone was tired, and our shoes were full of sand, but we were in a good mood.\n\nThe organiser asked us to stand in front of the newly planted trees and take a group photo. At that moment, many people were smiling because we felt that we had done something useful. Some people also laughed because we looked messy but happy.\n\nI remember this moment clearly. It was not a big celebration, but it felt warm. I smiled too, because I felt proud and thankful to be part of the group.",
+    "fullChinese": "很多人都在笑的一次场合，是甘肃植树活动的最后一天。\n\n我当时和璐璐、其他志愿者以及几位当地工作人员在一起。经过几天工作，我们终于完成了负责区域的小树苗种植。大家都很累，鞋里也全是沙子，但心情很好。\n\n组织者让我们站在刚种好的树苗前合影。那一刻，很多人都在笑，因为我们觉得自己做了一件有用的事情。有些人还笑是因为我们看起来很狼狈，但很开心。\n\n我清楚地记得这个时刻。它不是很大的庆祝，但很温暖。我也笑了，因为我感到自豪，也很感谢自己能成为这个团队的一员。"
+  },
+  {
+    "id": 52,
+    "topicCn": "禁止用手机的场合",
+    "title": "Describe an occasion when you were not allowed to use your mobile phone",
+    "cuePoints": [
+      "When it was",
+      "Where it was",
+      "Why you were not allowed to use your mobile phone",
+      "And how you felt about it"
+    ],
+    "story": "故事1",
+    "storyConversion": "I was not allowed to use my phone during a safety talk before the Gansu tree-planting work.",
+    "cnConversion": "禁止用手机：甘肃植树前安全说明会，需要专心听。",
+    "keywords": "safety talk\nput phones away\nfocus",
+    "fullEnglish": "An occasion when I was not allowed to use my mobile phone was during a short safety talk before the Gansu tree-planting activity.\n\nIt happened at the meeting point before we started working. The organiser asked everyone to put phones away for a while because they needed us to listen carefully. They explained how to use tools safely, how to protect the young trees, and what to do if the wind became too strong.\n\nAt first, I felt a little uncomfortable because I usually check my phone often. But after a few minutes, I understood the reason. If people looked at their phones, they might miss important safety information.\n\nIn the end, I thought it was reasonable. It helped us focus on the activity and avoid mistakes. I also realised that sometimes it is good to stay away from the phone for a short time.",
+    "fullChinese": "我有一次不被允许使用手机，是在甘肃植树活动开始前的一次安全说明会上。\n\n这件事发生在我们开始工作之前的集合点。组织者让大家暂时把手机收起来，因为他们需要我们认真听。他们解释了如何安全使用工具、如何保护小树苗，以及如果风变大应该怎么做。\n\n一开始我有点不习惯，因为我平时经常看手机。但过了几分钟，我理解了原因。如果大家都在看手机，就可能错过重要的安全信息。\n\n最后，我觉得这个要求很合理。它帮助我们专注于活动，也避免犯错。我也意识到，有时候短暂远离手机是好事。"
+  },
+  {
+    "id": 53,
+    "topicCn": "想见的名人",
+    "title": "Describe a famous person you would like to meet",
+    "cuePoints": [
+      "Who he/she is",
+      "How you knew him/her",
+      "How/where you would like to meet him/her",
+      "And explain why you would like to meet him/her"
+    ],
+    "story": "故事2",
+    "storyConversion": "I would like to meet Sam Altman at a public talk because ChatGPT has changed how I learn and work.",
+    "cnConversion": "想见的名人：Sam Altman，想听他现场讲负责任的 AI 和教育。",
+    "keywords": "Sam Altman\npublic talk\nresponsible AI",
+    "fullEnglish": "A famous person I would like to meet is Sam Altman, the co-founder and CEO of OpenAI.\n\nI knew him because I started using ChatGPT about two years ago. Later, I often saw short videos and interviews with him online. I am not usually interested in celebrities, but I am interested in him because AI has changed the way I study and work.\n\nIf I had the chance, I would like to meet him at a public talk or a technology event. I do not need a private meeting. I would just like to listen to him speak about how AI can be developed responsibly and how it can help education.\n\nI want to meet him because ChatGPT has helped me learn English and solve programming problems. I would like to understand more about the ideas behind this product and the future of AI.",
+    "fullChinese": "我想见的一位名人是 Sam Altman，他是 OpenAI 的联合创始人兼 CEO。\n\n我认识他是因为大约两年前开始使用 ChatGPT。后来，我经常在网上刷到他的短视频和采访。我平时并不是特别关注名人，但我对他感兴趣，因为 AI 改变了我的学习和工作方式。\n\n如果有机会，我想在一次公开演讲或科技活动上见到他。我不需要私下见面，只是想现场听他谈谈 AI 如何负责任地发展，以及它如何帮助教育。\n\n我想见他，是因为 ChatGPT 帮我学习英语，也帮我解决编程问题。我想更了解这个产品背后的想法，以及 AI 的未来。"
+  },
+  {
+    "id": 54,
+    "topicCn": "完美工作",
+    "title": "Describe a perfect job you would like to have in the future",
+    "cuePoints": [
+      "What it is",
+      "How you knew it",
+      "What you need to learn to get this job",
+      "And explain why you think it is a perfect job for you"
+    ],
+    "story": "故事2",
+    "storyConversion": "My perfect job would be to develop AI-powered learning games in the future.",
+    "cnConversion": "完美工作：用 AI 做学习类游戏，结合游戏、技术和教育。",
+    "keywords": "AI learning games\nuseful and fun\nmeaningful work",
+    "fullEnglish": "A perfect job I would like to have in the future is a game developer who uses AI to make learning games.\n\nI knew about this idea from my own work experience. I already work in game development, and in the past two years I have also used ChatGPT a lot for English learning and programming. So I started to think that games and AI could be combined in a useful way.\n\nTo get this job, I need to improve my English, programming skills, and understanding of AI tools. I also need to learn more about education, because a learning game should not only be fun but also helpful.\n\nI think it is a perfect job for me because it connects my interests. I like games, I like technology, and I want to make something meaningful. If a game can help people learn, I would feel proud of my work.",
+    "fullChinese": "我未来想拥有的一份完美工作，是做一名使用 AI 制作学习类游戏的游戏开发者。\n\n这个想法来自我自己的工作经历。我本来就在做游戏开发，过去两年也经常使用 ChatGPT 学英语和解决编程问题。所以我开始觉得，游戏和 AI 可以用一种有用的方式结合起来。\n\n为了得到这份工作，我需要提高英语、编程能力，以及对 AI 工具的理解。我也需要更多了解教育，因为一个学习游戏不应该只是好玩，也应该真的有帮助。\n\n我觉得这是适合我的完美工作，因为它连接了我的兴趣。我喜欢游戏，喜欢科技，也想做有意义的东西。如果一个游戏能帮助别人学习，我会为自己的工作感到自豪。"
+  },
+  {
+    "id": 55,
+    "topicCn": "安静的地方",
+    "title": "Describe a quiet place you like to go",
+    "cuePoints": [
+      "Where it is",
+      "How you knew it",
+      "How often you go there",
+      "What you do there",
+      "And explain how you feel about the place"
+    ],
+    "story": "故事1",
+    "storyConversion": "A quiet place I like is the open area near the Gansu tree-planting site in the early morning.",
+    "cnConversion": "安静的地方：甘肃植树点附近清晨的开阔区域，让人平静。",
+    "keywords": "quiet open area\nGansu morning\nfeel calm",
+    "fullEnglish": "A quiet place I like is the open area near the tree-planting site in Gansu, especially early in the morning.\n\nI knew this place because I went there for the volunteer activity. I do not go there often because it is far from where I live, but I still remember it clearly.\n\nBefore the volunteers started working, the place was very quiet. There were not many cars, and people spoke softly because everyone was still waking up. I stood there for a few minutes, looked at the wide land, and took a deep breath.\n\nI liked doing nothing there for a short time. It gave me a break from my normal city life, which is full of phones, messages, and work.\n\nI felt calm in that place. It was not a famous scenic spot, but it gave me a peaceful feeling that I still remember.",
+    "fullChinese": "我喜欢的一个安静地方，是甘肃植树地点附近的一片开阔区域，尤其是清晨的时候。\n\n我知道这个地方，是因为我去那里参加志愿活动。因为它离我住的地方很远，所以我不能经常去，但我仍然记得很清楚。\n\n在志愿者开始工作之前，那里非常安静。车不多，大家说话也很轻，因为都还在刚醒来的状态。我站在那里几分钟，看着开阔的土地，深深吸了一口气。\n\n我喜欢在那里短暂地什么都不做。它让我从平时充满手机、消息和工作的城市生活中休息了一下。\n\n我在那里感到很平静。它不是著名景点，但给了我一种到现在还记得的安静感觉。"
+  }
+];
+
+    const app = document.getElementById('app');
+    const currentScreen = document.getElementById('currentScreen');
+    const bufferScreen = document.getElementById('bufferScreen');
+    const translationPanel = document.getElementById('translationPanel');
+    const translationText = document.getElementById('translationText');
+    const closeTranslation = document.getElementById('closeTranslation');
+    const edgeHint = document.getElementById('edgeHint');
+
+    let index = Number(localStorage.getItem('ielts_part2_index') || 0);
+    if (!Number.isFinite(index) || index < 0 || index >= QUESTIONS.length) index = 0;
+
+    let mode = 'answer';
+    let translationOpen = false;
+
+    function storyName(q) {
+      if (q.story === '故事1') return '故事1 · 甘肃植树';
+      if (q.story === '故事2') return '故事2 · ChatGPT / OpenAI';
+      return q.story || '特殊题';
+    }
+
+    function esc(s) {
+      return String(s ?? '').replace(/[&<>"']/g, ch => ({
+        '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+      }[ch]));
+    }
+
+    function renderScreen(el, q, currentMode, pageIndex) {
+      const points = Array.isArray(q.cuePoints) && q.cuePoints.length
+        ? q.cuePoints
+        : ['No cue card found for this question.'];
+
+      el.className = 'card-screen ' + (currentMode === 'cue' ? 'mode-cue' : 'mode-answer') + (el === bufferScreen ? ' buffer' : '');
+
+      el.innerHTML = `
+        <header class="topbar">
+          <div class="top-title">IELTS Speaking Part 2</div>
+          <div class="progress">${pageIndex + 1}/${QUESTIONS.length}</div>
+        </header>
+
+        <div class="meta-row">
+          <div class="story-tag">${esc(storyName(q))}</div>
+        </div>
+
+        <div class="question-title">${esc(q.title || q.topicCn || '')}</div>
+
+        <div class="page-indicator" aria-hidden="true">
+          <div class="active-line"></div>
+        </div>
+
+        <section class="content-wrap">
+          <div class="answer-only">
+            <h2 class="section-title"><span class="section-icon"></span><span>Full Answer</span></h2>
+            <div class="answer-text">${esc(q.fullEnglish || '')}</div>
+            ${q.keywords ? `<div class="keywords">辅助记忆：\n${esc(q.keywords)}</div>` : ''}
+          </div>
+
+          <div class="cue-only">
+            <h2 class="section-title"><span class="section-icon"></span><span>You should say:</span></h2>
+            <ul class="cue-list">
+              ${points.map(p => `<li>${esc(p)}</li>`).join('')}
+            </ul>
+          </div>
+        </section>
+
+        <div class="translate-chip">中</div>
+      `;
+
+      const chip = el.querySelector('.translate-chip');
+      chip.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (el !== currentScreen || mode !== 'answer') return;
+        if (translationOpen) hideTranslation();
+        else showTranslation();
+      });
+    }
+
+    function renderCurrent() {
+      renderScreen(currentScreen, QUESTIONS[index], mode, index);
+      currentScreen.style.transform = 'translateY(0px)';
+      currentScreen.style.opacity = '1';
+      currentScreen.classList.remove('anim');
+      bufferScreen.style.display = 'none';
+      bufferScreen.classList.remove('anim');
+      bufferScreen.style.transform = 'translateY(0px)';
+      bufferScreen.style.opacity = '1';
+      translationText.textContent = QUESTIONS[index].fullChinese || '';
+      hideTranslation();
+      localStorage.setItem('ielts_part2_index', String(index));
+    }
+
+    function setMode(nextMode) {
+      if (mode === nextMode) return;
+      mode = nextMode;
+      hideTranslation();
+      renderCurrent();
+    }
+
+    function showTranslation() {
+      translationOpen = true;
+      translationPanel.classList.add('show');
+    }
+
+    function hideTranslation() {
+      translationOpen = false;
+      translationPanel.classList.remove('show');
+    }
+
+    closeTranslation.addEventListener('click', hideTranslation);
+
+    let startX = 0, startY = 0, lastX = 0, lastY = 0, startTime = 0;
+    let axis = null;
+    let activeVerticalDrag = false;
+    let activeHorizontalDrag = false;
+    let verticalDirection = 0;
+
+    function currentContent() {
+      return currentScreen.querySelector('.content-wrap');
+    }
+
+    function canStartVerticalPageDrag(dy) {
+      const c = currentContent();
+      if (!c) return false;
+      const atTop = c.scrollTop <= 2;
+      const atBottom = c.scrollTop + c.clientHeight >= c.scrollHeight - 2;
+      if (dy > 0 && atTop && index > 0) return true;
+      if (dy < 0 && atBottom && index < QUESTIONS.length - 1) return true;
+      return false;
+    }
+
+    function startVerticalDrag(direction) {
+      activeVerticalDrag = true;
+      verticalDirection = direction;
+
+      const targetIndex = index + direction;
+      mode = 'answer';
+      renderScreen(bufferScreen, QUESTIONS[targetIndex], mode, targetIndex);
+      bufferScreen.style.display = 'flex';
+
+      const h = app.clientHeight;
+      bufferScreen.classList.remove('anim');
+      currentScreen.classList.remove('anim');
+      bufferScreen.style.opacity = '1';
+      currentScreen.style.opacity = '1';
+      bufferScreen.style.transform = `translateY(${direction === 1 ? h : -h}px)`;
+    }
+
+    function moveVerticalDrag(dy) {
+      const h = app.clientHeight;
+      const resisted = dy * 0.98;
+      currentScreen.style.transform = `translateY(${resisted}px)`;
+      currentScreen.style.opacity = String(Math.max(0.72, 1 - Math.abs(resisted) / h * 0.28));
+
+      const bufferY = verticalDirection === 1 ? h + resisted : -h + resisted;
+      bufferScreen.style.transform = `translateY(${bufferY}px)`;
+      bufferScreen.style.opacity = '1';
+    }
+
+    function finishVerticalDrag() {
+      const h = app.clientHeight;
+      const outY = verticalDirection === 1 ? -h : h;
+
+      currentScreen.classList.add('anim');
+      bufferScreen.classList.add('anim');
+
+      currentScreen.style.transform = `translateY(${outY}px)`;
+      currentScreen.style.opacity = '.75';
+      bufferScreen.style.transform = 'translateY(0px)';
+      bufferScreen.style.opacity = '1';
+
+      setTimeout(() => {
+        index += verticalDirection;
+        mode = 'answer';
+        renderCurrent();
+      }, 260);
+    }
+
+    function cancelVerticalDrag() {
+      const h = app.clientHeight;
+      currentScreen.classList.add('anim');
+      bufferScreen.classList.add('anim');
+
+      currentScreen.style.transform = 'translateY(0px)';
+      currentScreen.style.opacity = '1';
+      bufferScreen.style.transform = `translateY(${verticalDirection === 1 ? h : -h}px)`;
+      bufferScreen.style.opacity = '1';
+
+      setTimeout(() => {
+        bufferScreen.style.display = 'none';
+        currentScreen.classList.remove('anim');
+        bufferScreen.classList.remove('anim');
+      }, 260);
+    }
+
+    app.addEventListener('touchstart', (e) => {
+      if (translationOpen) return;
+      const t = e.touches[0];
+      startX = lastX = t.clientX;
+      startY = lastY = t.clientY;
+      startTime = Date.now();
+      axis = null;
+      activeVerticalDrag = false;
+      activeHorizontalDrag = false;
+      verticalDirection = 0;
+      edgeHint.textContent = '';
+      currentScreen.classList.remove('anim');
+      bufferScreen.classList.remove('anim');
+    }, { passive: true });
+
+    app.addEventListener('touchmove', (e) => {
+      if (translationOpen) return;
+      const t = e.touches[0];
+      lastX = t.clientX;
+      lastY = t.clientY;
+
+      const dx = lastX - startX;
+      const dy = lastY - startY;
+      const absX = Math.abs(dx);
+      const absY = Math.abs(dy);
+
+      if (!axis && (absX > 10 || absY > 10)) {
+        axis = absX > absY ? 'x' : 'y';
+      }
+
+      if (axis === 'x') {
+        activeHorizontalDrag = true;
+        if (absX > 18) e.preventDefault();
+        return;
+      }
+
+      if (axis === 'y') {
+        if (!activeVerticalDrag) {
+          if (canStartVerticalPageDrag(dy)) {
+            const direction = dy < 0 ? 1 : -1;
+            startVerticalDrag(direction);
+          } else {
+            const c = currentContent();
+            if (c) {
+              const atTop = c.scrollTop <= 2;
+              const atBottom = c.scrollTop + c.clientHeight >= c.scrollHeight - 2;
+              if (dy > 0 && atTop && index === 0) edgeHint.textContent = '已经是第一题';
+              else if (dy < 0 && atBottom && index === QUESTIONS.length - 1) edgeHint.textContent = '已经是最后一题';
+            }
+            return;
+          }
+        }
+
+        if (activeVerticalDrag) {
+          e.preventDefault();
+          moveVerticalDrag(dy);
+        }
+      }
+    }, { passive: false });
+
+    app.addEventListener('touchend', () => {
+      if (translationOpen) return;
+
+      const dx = lastX - startX;
+      const dy = lastY - startY;
+      const dt = Math.max(1, Date.now() - startTime);
+      const vy = dy / dt;
+      const vx = dx / dt;
+
+      if (activeVerticalDrag) {
+        const passDistance = Math.abs(dy) > Math.min(150, app.clientHeight * 0.22);
+        const passVelocity = Math.abs(vy) > 0.72 && Math.abs(dy) > 48;
+
+        if (passDistance || passVelocity) finishVerticalDrag();
+        else cancelVerticalDrag();
+      } else if (activeHorizontalDrag || axis === 'x') {
+        if (Math.abs(dx) > 70 || Math.abs(vx) > 0.65) {
+          if (dx > 0) setMode('cue');
+          else setMode('answer');
+        }
+      }
+
+      axis = null;
+      activeVerticalDrag = false;
+      activeHorizontalDrag = false;
+      verticalDirection = 0;
+      setTimeout(() => edgeHint.textContent = '', 500);
+    }, { passive: true });
+
+    app.addEventListener('touchcancel', () => {
+      if (activeVerticalDrag) cancelVerticalDrag();
+      axis = null;
+      activeVerticalDrag = false;
+      activeHorizontalDrag = false;
+      verticalDirection = 0;
+    }, { passive: true });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' && index < QUESTIONS.length - 1) {
+        startVerticalDrag(1);
+        setTimeout(finishVerticalDrag, 20);
+      }
+      if (e.key === 'ArrowUp' && index > 0) {
+        startVerticalDrag(-1);
+        setTimeout(finishVerticalDrag, 20);
+      }
+      if (e.key === 'ArrowRight') setMode('cue');
+      if (e.key === 'ArrowLeft') setMode('answer');
+      if (e.key === 'Escape') hideTranslation();
+    });
+
+    renderCurrent();
+  </script>
+</body>
+</html>
