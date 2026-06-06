@@ -6,6 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="format-detection" content="telephone=no" />
+  <link rel="icon" href="data:," />
   <title>IELTS Speaking Part 2</title>
   <style>
     :root {
@@ -52,26 +53,30 @@
 
     .track {
       position: absolute;
-      left: 0;
-      top: 0;
+      inset: 0;
       width: 100%;
+      height: 100%;
       will-change: transform;
       transform: translate3d(0,0,0);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
 
     .track.anim {
-      transition: transform var(--snap-duration) cubic-bezier(.22,.78,.2,1);
+      transition: transform var(--snap-duration) cubic-bezier(.2,.78,.24,1);
     }
 
     .card-page {
-      position: relative;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(var(--page-offset) * 100%);
       width: 100%;
-      height: 100vh;
-      height: 100dvh;
+      height: 100%;
       padding: calc(var(--safe-top) + 14px) 24px calc(var(--safe-bottom) + 18px);
       display: flex;
       flex-direction: column;
-      background: transparent;
+      background: radial-gradient(circle at 50% -10%, rgba(93,154,79,.08), transparent 38%), var(--bg);
       overflow: hidden;
     }
 
@@ -319,6 +324,19 @@
       color: rgba(35,112,51,.42);
       pointer-events: none;
       z-index: 12;
+    }
+
+    @media (hover: hover) and (pointer: fine) and (min-height: 780px) {
+      body {
+        display: grid;
+        place-items: center;
+      }
+
+      .app {
+        height: min(100vh, 760px);
+        border-radius: 24px;
+        box-shadow: 0 18px 60px rgba(25, 56, 30, .1);
+      }
     }
   </style>
 </head>
@@ -1298,6 +1316,11 @@
     let dragY = 0;
     let translationOpen = false;
     let isSnapping = false;
+    let snapTarget = index;
+    let snapTimer = 0;
+    let snapEndHandler = null;
+    let paintFrame = 0;
+    let pendingTrackY = 0;
 
     function storyName(q) {
       if (q.story === '故事1') return '故事1 · 甘肃植树';
@@ -1311,10 +1334,10 @@
       }[ch]));
     }
 
-    function pageHTML(q, i) {
+    function pageHTML(q, i, offset) {
       const points = Array.isArray(q.cuePoints) && q.cuePoints.length ? q.cuePoints : ['No cue card found for this question.'];
       return `
-        <article class="card-page mode-answer" data-page="${i}">
+        <article class="card-page mode-answer" data-page="${i}" style="--page-offset:${offset}">
           <header class="topbar">
             <div class="top-title">IELTS Speaking Part 2</div>
             <div class="progress">${i + 1}/${QUESTIONS.length}</div>
@@ -1349,16 +1372,26 @@
     }
 
     function buildPages() {
-      track.innerHTML = QUESTIONS.map((q, i) => pageHTML(q, i)).join('');
-      track.querySelectorAll('.translate-chip').forEach(chip => {
-        chip.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const page = chip.closest('.card-page');
-          if (!page || Number(page.dataset.page) !== index || mode !== 'answer') return;
-          translationOpen ? hideTranslation() : showTranslation();
-        });
-      });
+      const first = Math.max(0, index - 1);
+      const last = Math.min(QUESTIONS.length - 1, index + 1);
+      const pages = [];
+
+      for (let i = first; i <= last; i += 1) {
+        pages.push(pageHTML(QUESTIONS[i], i, i - index));
+      }
+
+      track.innerHTML = pages.join('');
     }
+
+    track.addEventListener('click', (e) => {
+      const chip = e.target.closest('.translate-chip');
+      if (!chip) return;
+
+      e.stopPropagation();
+      const page = chip.closest('.card-page');
+      if (!page || Number(page.dataset.page) !== index || mode !== 'answer') return;
+      translationOpen ? hideTranslation() : showTranslation();
+    });
 
     function currentPage() {
       return track.querySelector(`.card-page[data-page="${index}"]`);
@@ -1370,8 +1403,8 @@
     }
 
     function updateModeClasses() {
-      track.querySelectorAll('.card-page').forEach((p, i) => {
-        if (i === index) {
+      track.querySelectorAll('.card-page').forEach(p => {
+        if (Number(p.dataset.page) === index) {
           p.classList.toggle('mode-answer', mode === 'answer');
           p.classList.toggle('mode-cue', mode === 'cue');
         } else {
@@ -1385,15 +1418,32 @@
       translationText.textContent = QUESTIONS[index].fullChinese || '';
     }
 
-    function trackYFor(pageIndex, extraY = 0) {
+    function trackYFor(pageIndex = index, extraY = 0) {
       viewH = app.clientHeight || window.innerHeight;
-      return -pageIndex * viewH + extraY;
+      return -(pageIndex - index) * viewH + extraY;
     }
 
     function setTrackY(y, animated = false, duration = 480) {
       track.style.setProperty('--snap-duration', duration + 'ms');
       track.classList.toggle('anim', animated);
       track.style.transform = `translate3d(0, ${y}px, 0)`;
+    }
+
+    function paintTrackY(y) {
+      pendingTrackY = y;
+      if (paintFrame) return;
+
+      paintFrame = requestAnimationFrame(() => {
+        paintFrame = 0;
+        setTrackY(pendingTrackY, false, 0);
+      });
+    }
+
+    function flushTrackPaint() {
+      if (!paintFrame) return;
+      cancelAnimationFrame(paintFrame);
+      paintFrame = 0;
+      setTrackY(pendingTrackY, false, 0);
     }
 
     function positionNow(animated = false) {
@@ -1434,80 +1484,140 @@
       };
     }
 
-    function canPageFromContent(dy) {
-      const b = scrollBoundary();
-      if (dy > 0 && b.atTop && index > 0) return true;
-      if (dy < 0 && b.atBottom && index < QUESTIONS.length - 1) return true;
-      return false;
-    }
-
     function canPageDirect(dy) {
       if (dy > 0 && index > 0) return true;
       if (dy < 0 && index < QUESTIONS.length - 1) return true;
       return false;
     }
 
-    function snapBack(duration = 440) {
-      // 拖拽不够时只弹回当前页，不重置 answer/cue 状态，也不重置正文滚动。
-      // 这样松手回弹不会像“闪一下换页”。
-      isSnapping = true;
-      setTrackY(trackYFor(index), true, duration);
+    function clearSnapWait() {
+      window.clearTimeout(snapTimer);
+      snapTimer = 0;
 
-      const finish = () => {
-        track.removeEventListener('transitionend', finish);
-        track.classList.remove('anim');
-        dragY = 0;
-        setTrackY(trackYFor(index), false, 0);
-        isSnapping = false;
-      };
-
-      track.addEventListener('transitionend', finish, { once: true });
-      window.setTimeout(() => {
-        if (isSnapping) finish();
-      }, duration + 140);
+      if (snapEndHandler) {
+        track.removeEventListener('transitionend', snapEndHandler);
+        snapEndHandler = null;
+      }
     }
 
-    function snapTo(targetIndex, duration = 560) {
+    function finishSnap() {
+      if (!isSnapping) return;
+
+      clearSnapWait();
+      track.classList.remove('anim');
+      index = snapTarget;
+      mode = 'answer';
+      dragY = 0;
+      isSnapping = false;
+      buildPages();
+      updateModeClasses();
+      updateTranslationText();
+      setTrackY(0, false, 0);
+      localStorage.setItem('ielts_part2_index', String(index));
+
+      const c = currentContent();
+      if (c) c.scrollTop = 0;
+    }
+
+    function animateTrackTo(y, duration, onFinish) {
+      clearSnapWait();
+      flushTrackPaint();
+      isSnapping = true;
+
+      snapEndHandler = (event) => {
+        if (event.target !== track || event.propertyName !== 'transform') return;
+        clearSnapWait();
+        onFinish();
+      };
+
+      track.addEventListener('transitionend', snapEndHandler);
+      snapTimer = window.setTimeout(() => {
+        clearSnapWait();
+        onFinish();
+      }, duration + 100);
+
+      setTrackY(y, true, duration);
+    }
+
+    function completeSnapForNewGesture() {
+      if (!isSnapping) return;
+      if (snapTarget === index) {
+        clearSnapWait();
+        track.classList.remove('anim');
+        dragY = 0;
+        isSnapping = false;
+        setTrackY(0, false, 0);
+        return;
+      }
+      finishSnap();
+    }
+
+    function snapBack(duration = 230) {
+      snapTarget = index;
+      animateTrackTo(0, duration, () => {
+        track.classList.remove('anim');
+        dragY = 0;
+        setTrackY(0, false, 0);
+        isSnapping = false;
+      });
+    }
+
+    function snapTo(targetIndex, duration = 300) {
       const nextIndex = Math.max(0, Math.min(QUESTIONS.length - 1, targetIndex));
 
       if (nextIndex === index) {
-        snapBack(440);
+        snapBack();
         return;
       }
 
-      isSnapping = true;
       hideTranslation();
-      setTrackY(trackYFor(nextIndex), true, duration);
-
-      const finish = () => {
-        track.removeEventListener('transitionend', finish);
-        track.classList.remove('anim');
-        index = nextIndex;
-        mode = 'answer';
-        dragY = 0;
-        const c = currentContent();
-        if (c) c.scrollTop = 0;
-        updateModeClasses();
-        updateTranslationText();
-        setTrackY(trackYFor(index), false, 0);
-        localStorage.setItem('ielts_part2_index', String(index));
-        isSnapping = false;
-      };
-
-      track.addEventListener('transitionend', finish, { once: true });
-      window.setTimeout(() => {
-        if (isSnapping) finish();
-      }, duration + 140);
+      snapTarget = nextIndex;
+      animateTrackTo(trackYFor(nextIndex), duration, finishSnap);
     }
 
     let startX = 0, startY = 0, lastX = 0, lastY = 0, dragStartY = 0, startTime = 0;
     let axis = null;
     let startedInContent = false;
+    let startBoundary = { atTop: true, atBottom: true };
     let activeV = false;
     let activeH = false;
+    let gestureActive = false;
+    let pageDirection = 0;
+    let velocitySamples = [];
+    let wheelIntent = 0;
+    let wheelResetTimer = 0;
+    let wheelLockUntil = 0;
+
+    function addVelocitySample(y) {
+      const now = performance.now();
+      velocitySamples.push({ y, time: now });
+      while (velocitySamples.length > 2 && now - velocitySamples[0].time > 100) {
+        velocitySamples.shift();
+      }
+    }
+
+    function recentVerticalVelocity() {
+      if (velocitySamples.length < 2) return 0;
+      const first = velocitySamples[0];
+      const last = velocitySamples[velocitySamples.length - 1];
+      return (last.y - first.y) / Math.max(1, last.time - first.time);
+    }
+
+    function resetGesture() {
+      dragY = 0;
+      axis = null;
+      activeV = false;
+      activeH = false;
+      gestureActive = false;
+      pageDirection = 0;
+      velocitySamples = [];
+      window.setTimeout(() => edgeHint.textContent = '', 500);
+    }
 
     app.addEventListener('touchstart', e => {
-      if (translationOpen || isSnapping) return;
+      if (translationOpen || e.touches.length !== 1) return;
+
+      completeSnapForNewGesture();
       const t = e.touches[0];
       startX = lastX = t.clientX;
       startY = lastY = t.clientY;
@@ -1515,16 +1625,21 @@
       startTime = Date.now();
       axis = null;
       startedInContent = !!e.target.closest('.content-wrap');
+      startBoundary = scrollBoundary();
       activeV = false;
       activeH = false;
+      gestureActive = true;
+      pageDirection = 0;
       dragY = 0;
+      velocitySamples = [];
+      addVelocitySample(startY);
       edgeHint.textContent = '';
       track.classList.remove('anim');
-      setTrackY(trackYFor(index), false, 0);
+      setTrackY(0, false, 0);
     }, { passive: true });
 
     app.addEventListener('touchmove', e => {
-      if (translationOpen || isSnapping) return;
+      if (translationOpen || !gestureActive || e.touches.length !== 1) return;
       const t = e.touches[0];
       lastX = t.clientX;
       lastY = t.clientY;
@@ -1534,60 +1649,86 @@
       const absX = Math.abs(dx);
       const absY = Math.abs(dy);
 
-      if (!axis && (absX > 10 || absY > 10)) {
-        axis = absX > absY ? 'x' : 'y';
+      if (!axis && (absX > 8 || absY > 8)) {
+        axis = absX > absY * 1.08 ? 'x' : 'y';
       }
 
       if (axis === 'x') {
         activeH = true;
-        if (absX > 14) e.preventDefault();
+        if (absX > 10) e.preventDefault();
         return;
       }
 
       if (axis === 'y') {
         if (!activeV) {
-          const can = startedInContent ? canPageFromContent(dy) : canPageDirect(dy);
+          const elapsed = Math.max(1, Date.now() - startTime);
+          const isQuickFlick = Math.abs(dy) > 18 && Math.abs(dy) / elapsed > 0.85;
+          const canPageAtBoundary = (dy > 0 && startBoundary.atTop && index > 0)
+            || (dy < 0 && startBoundary.atBottom && index < QUESTIONS.length - 1);
+          const can = startedInContent
+            ? (canPageAtBoundary || (isQuickFlick && canPageDirect(dy)))
+            : canPageDirect(dy);
+
           if (can) {
             activeV = true;
-            dragStartY = lastY;
-            dragY = 0;
+            pageDirection = dy < 0 ? 1 : -1;
+            dragStartY = startY;
+            dragY = dy;
+            velocitySamples = [];
+            addVelocitySample(startY);
+            addVelocitySample(lastY);
             track.classList.remove('anim');
           } else {
             if (!startedInContent) {
               const blocked = (dy > 0 && index === 0) || (dy < 0 && index === QUESTIONS.length - 1);
               if (blocked) edgeHint.textContent = dy > 0 ? '已经是第一题' : '已经是最后一题';
             }
+            // 慢拖用于阅读正文；一旦正文接管，就不在中途突然切换为翻页。
+            axis = 'scroll';
             return;
           }
         }
 
         if (activeV) {
           e.preventDefault();
-          dragY = lastY - dragStartY;
-          setTrackY(trackYFor(index, dragY), false, 0);
+          const rawDragY = lastY - dragStartY;
+          const reversed = (pageDirection > 0 && rawDragY > 0)
+            || (pageDirection < 0 && rawDragY < 0);
+          dragY = reversed ? rawDragY * 0.18 : rawDragY;
+          addVelocitySample(lastY);
+          paintTrackY(dragY);
         }
       }
     }, { passive: false });
 
     app.addEventListener('touchend', () => {
-      if (translationOpen || isSnapping) return;
+      if (translationOpen || !gestureActive) return;
 
       const dx = lastX - startX;
-      const activeDy = lastY - dragStartY;
+      const activeDy = activeV ? dragY : lastY - dragStartY;
       const dt = Math.max(1, Date.now() - startTime);
       const vx = dx / dt;
-      const vy = activeDy / dt;
+      const vy = recentVerticalVelocity();
 
       if (activeV) {
-        const passDistance = Math.abs(activeDy) > Math.min(145, viewH * 0.2);
-        const passVelocity = Math.abs(vy) > 0.72 && Math.abs(activeDy) > 42;
+        flushTrackPaint();
+        const projectedDy = activeDy + vy * 140;
+        const passDistance = Math.abs(activeDy) > Math.min(112, viewH * 0.15);
+        const passVelocity = Math.abs(projectedDy) > Math.min(92, viewH * 0.12)
+          && Math.abs(activeDy) > 24;
         let target = index;
 
-        if ((passDistance || passVelocity) && activeDy < 0 && index < QUESTIONS.length - 1) target = index + 1;
-        if ((passDistance || passVelocity) && activeDy > 0 && index > 0) target = index - 1;
+        if ((passDistance || passVelocity) && pageDirection > 0 && activeDy < 0) target = index + 1;
+        if ((passDistance || passVelocity) && pageDirection < 0 && activeDy > 0) target = index - 1;
 
-        if (target === index) snapBack(440);
-          else snapTo(target, 560);
+        if (target === index) {
+          snapBack();
+        } else {
+          const remaining = Math.max(0, viewH - Math.abs(activeDy));
+          const speed = Math.max(1.6, Math.abs(vy));
+          const duration = Math.max(180, Math.min(320, Math.round(remaining / speed)));
+          snapTo(target, duration);
+        }
       } else if (activeH || axis === 'x') {
         if (Math.abs(dx) > 68 || Math.abs(vx) > 0.62) {
           if (dx < 0) setMode('cue');       // 手向左滑：提示卡片
@@ -1595,28 +1736,78 @@
         }
       }
 
-      dragY = 0;
-      axis = null;
-      activeV = false;
-      activeH = false;
-      setTimeout(() => edgeHint.textContent = '', 500);
+      resetGesture();
     }, { passive: true });
 
     app.addEventListener('touchcancel', () => {
-      dragY = 0;
-      snapBack(440);
-      axis = null;
-      activeV = false;
-      activeH = false;
+      if (!gestureActive) return;
+      if (activeV) {
+        flushTrackPaint();
+        snapBack(180);
+      }
+      resetGesture();
     }, { passive: true });
 
+    app.addEventListener('wheel', e => {
+      if (translationOpen || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+
+      const now = performance.now();
+      if (isSnapping || now < wheelLockUntil) {
+        e.preventDefault();
+        wheelLockUntil = now + 180;
+        return;
+      }
+
+      const direction = Math.sign(e.deltaY);
+      const isMouseWheel = e.deltaMode !== WheelEvent.DOM_DELTA_PIXEL || Math.abs(e.deltaY) >= 50;
+
+      // 普通鼠标滚轮按“一格一页”处理，避免先滚到正文底部再出现大段留白。
+      if (isMouseWheel) {
+        const target = index + direction;
+        if (target < 0 || target >= QUESTIONS.length) return;
+
+        e.preventDefault();
+        wheelIntent = 0;
+        wheelLockUntil = now + 180;
+        snapTo(target, 260);
+        return;
+      }
+
+      // 触控板的小幅连续滚动保留正文阅读能力，到边界后再翻页。
+      const boundary = scrollBoundary();
+      const canMove = direction > 0
+        ? boundary.atBottom && index < QUESTIONS.length - 1
+        : boundary.atTop && index > 0;
+
+      if (!canMove) {
+        wheelIntent = 0;
+        return;
+      }
+
+      e.preventDefault();
+      wheelIntent += e.deltaY;
+      window.clearTimeout(wheelResetTimer);
+      wheelResetTimer = window.setTimeout(() => {
+        wheelIntent = 0;
+      }, 160);
+
+      if (Math.abs(wheelIntent) < 42) return;
+
+      const target = index + Math.sign(wheelIntent);
+      wheelIntent = 0;
+      wheelLockUntil = now + 180;
+      snapTo(target, 260);
+    }, { passive: false });
+
     window.addEventListener('resize', () => {
-      positionNow(false);
+      viewH = app.clientHeight || window.innerHeight;
+      if (isSnapping) completeSnapForNewGesture();
+      else if (!activeV) setTrackY(0, false, 0);
     });
 
     window.addEventListener('keydown', e => {
-      if (e.key === 'ArrowDown' && index < QUESTIONS.length - 1) snapTo(index + 1, 560);
-      if (e.key === 'ArrowUp' && index > 0) snapTo(index - 1, 560);
+      if (e.key === 'ArrowDown' && index < QUESTIONS.length - 1) snapTo(index + 1);
+      if (e.key === 'ArrowUp' && index > 0) snapTo(index - 1);
       if (e.key === 'ArrowRight') setMode('answer');
       if (e.key === 'ArrowLeft') setMode('cue');
       if (e.key === 'Escape') hideTranslation();
